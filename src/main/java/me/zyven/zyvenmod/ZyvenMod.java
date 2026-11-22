@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
@@ -18,6 +17,7 @@ import java.util.regex.Pattern;
 public final class ZyvenMod implements ClientModInitializer {
     public static final ProfitTracker PROFIT = new ProfitTracker();
     public static boolean showProfit = true;
+    public static boolean showFps = true;
     public static boolean fakeItemsEnabled = false;
     public static boolean viewmodelEnabled = false;
     public static boolean customSkyEnabled = false;
@@ -56,16 +56,7 @@ public final class ZyvenMod implements ClientModInitializer {
             return true;
         });
 
-        HudRenderCallback.EVENT.register((draw, tickCounter) -> {
-            if (!showProfit) return;
-            String value = "PROFIT: " + PROFIT.formatted();
-            int color = PROFIT.value() > 0 ? 0xFF55E68A :
-                    PROFIT.value() < 0 ? 0xFFFF626B : 0xFFB8BEC9;
-            int width = draw.getScaledWindowWidth();
-            draw.drawCenteredTextWithShadow(
-                    net.minecraft.client.MinecraftClient.getInstance().textRenderer,
-                    Text.literal(value), width / 2, 12, color);
-        });
+
     }
 
     public static final class ProfitTracker {
