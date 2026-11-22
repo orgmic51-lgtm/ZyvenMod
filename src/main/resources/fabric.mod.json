@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "zyvenmod",
+  "version": "${version}",
+  "name": "ZyvenMod",
+  "description": "A client-side utility mod for the ZyvenSMP experience.",
+  "authors": ["Zyven"],
+  "environment": "client",
+  "entrypoints": {
+    "client": ["me.zyven.zyvenmod.ZyvenMod"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
