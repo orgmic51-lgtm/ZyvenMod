@@ -30,7 +30,7 @@ public abstract class InGameHudMixin {
         int x = center - totalWidth / 2;
 
         if (ZyvenMod.showFps) {
-            draw.fill(x, top, x + fpsWidth, top + 25, 0xB9000000);
+            if (ZyvenMod.hudBackground) draw.fill(x, top, x + fpsWidth, top + 25, 0xB9000000);
             draw.drawCenteredTextWithShadow(client.textRenderer,
                     Text.literal(client.getCurrentFps() + " FPS"),
                     x + fpsWidth / 2, top + 8, 0xFFFFFFFF);
@@ -40,7 +40,7 @@ public abstract class InGameHudMixin {
         if (ZyvenMod.showProfit) {
             int color = ZyvenMod.PROFIT.value() > 0 ? 0xFF55E68A :
                     ZyvenMod.PROFIT.value() < 0 ? 0xFFFF626B : 0xFFFFFFFF;
-            draw.fill(x, top, x + profitWidth, top + 25, 0xB9000000);
+            if (ZyvenMod.hudBackground) draw.fill(x, top, x + profitWidth, top + 25, 0xB9000000);
             draw.drawCenteredTextWithShadow(client.textRenderer,
                     Text.literal("PROFIT: " + ZyvenMod.PROFIT.formatted()),
                     x + profitWidth / 2, top + 8, color);
