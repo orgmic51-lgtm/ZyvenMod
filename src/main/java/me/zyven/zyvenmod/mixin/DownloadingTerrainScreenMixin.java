@@ -1,7 +1,7 @@
 package me.zyven.zyvenmod.mixin;
 
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.world.DownloadingTerrainScreen;
+import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.render.RenderLayer;
