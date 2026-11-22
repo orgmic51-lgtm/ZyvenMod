@@ -19,6 +19,11 @@ public final class ZyvenMod implements ClientModInitializer {
     public static final ProfitTracker PROFIT = new ProfitTracker();
     public static boolean showProfit = true;
     public static boolean fakeItemsEnabled = false;
+    public static boolean viewmodelEnabled = false;
+    public static boolean customSkyEnabled = false;
+    public static boolean hatsEnabled = false;
+    public static boolean crosshairStyleEnabled = false;
+    public static boolean cleanHudEnabled = false;
     private static KeyBinding modulesKey;
     private static KeyBinding auctionKey;
 
