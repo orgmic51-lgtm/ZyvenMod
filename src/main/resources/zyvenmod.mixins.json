@@ -2,6 +2,12 @@
   "required": true,
   "package": "me.zyven.zyvenmod.mixin",
   "compatibilityLevel": "JAVA_21",
-  "client": ["HandledScreenMixin"],
-  "injectors": { "defaultRequire": 1 }
+  "client": [
+    "HandledScreenMixin",
+    "InGameHudMixin",
+    "DownloadingTerrainScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }
