@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.regex.Matcher;
@@ -25,10 +26,10 @@ public final class ZyvenMod implements ClientModInitializer {
     public void onInitializeClient() {
         modulesKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.zyvenmod.modules", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT,
-                "category.zyvenmod"));
+                new KeyBinding.Category(Identifier.of("zyvenmod", "keys"))));
         auctionKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.zyvenmod.auction", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_O,
-                "category.zyvenmod"));
+                new KeyBinding.Category(Identifier.of("zyvenmod", "keys"))));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (modulesKey.wasPressed()) {
