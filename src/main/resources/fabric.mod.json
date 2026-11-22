@@ -3,12 +3,11 @@
   "id": "zyvenmod",
   "version": "${version}",
   "name": "ZyvenMod",
-  "description": "A client-side utility mod for the ZyvenSMP experience.",
+  "description": "A client-side utility mod for ZyvenSMP.",
   "authors": ["Zyven"],
   "environment": "client",
-  "entrypoints": {
-    "client": ["me.zyven.zyvenmod.ZyvenMod"]
-  },
+  "entrypoints": { "client": ["me.zyven.zyvenmod.ZyvenMod"] },
+  "mixins": ["zyvenmod.mixins.json"],
   "depends": {
     "fabricloader": ">=0.18.0",
     "minecraft": "~1.21.11",
