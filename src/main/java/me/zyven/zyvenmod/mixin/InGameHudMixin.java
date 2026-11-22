@@ -14,36 +14,68 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
+    private static final int PANEL_HEIGHT = 28;
+    private static final int CORNER_RADIUS = 6;
+    private static final int HORIZONTAL_PADDING = 18;
+    private static final int PANEL_GAP = 7;
+
     @Inject(method = "render", at = @At("TAIL"))
     private void zyven$drawOverlays(DrawContext draw, RenderTickCounter tickCounter, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
         PlayerEntity player = client.player;
         if (player == null || client.options.hudHidden) return;
 
-        int center = draw.getScaledWindowWidth() / 2;
-        int top = 8;
-        int fpsWidth = client.textRenderer.getWidth(client.getCurrentFps() + " FPS") + 20;
-        int profitWidth = ZyvenMod.showProfit
-                ? client.textRenderer.getWidth("PROFIT: " + ZyvenMod.PROFIT.formatted()) + 20 : 0;
-        int gap = ZyvenMod.showFps && ZyvenMod.showProfit ? 6 : 0;
-        int totalWidth = (ZyvenMod.showFps ? fpsWidth : 0) + (ZyvenMod.showProfit ? profitWidth : 0) + gap;
-        int x = center - totalWidth / 2;
+        boolean fpsEnabled = ZyvenMod.showFps;
+        boolean profitEnabled = ZyvenMod.showProfit;
+        if (!fpsEnabled && !profitEnabled) return;
 
-        if (ZyvenMod.showFps) {
-            if (ZyvenMod.hudBackground) draw.fill(x, top, x + fpsWidth, top + 25, 0xB9000000);
-            draw.drawCenteredTextWithShadow(client.textRenderer,
-                    Text.literal(client.getCurrentFps() + " FPS"),
-                    x + fpsWidth / 2, top + 8, 0xFFFFFFFF);
+        String fpsText = client.getCurrentFps() + " FPS";
+        String profitText = "PROFIT " + ZyvenMod.PROFIT.formatted();
+        int fpsWidth = fpsEnabled ? client.textRenderer.getWidth(fpsText) + HORIZONTAL_PADDING * 2 : 0;
+        int profitWidth = profitEnabled ? client.textRenderer.getWidth(profitText) + HORIZONTAL_PADDING * 2 : 0;
+        int gap = fpsEnabled && profitEnabled ? PANEL_GAP : 0;
+        int totalWidth = fpsWidth + profitWidth + gap;
+        int x = (draw.getScaledWindowWidth() - totalWidth) / 2;
+        int y = 12;
+
+        if (fpsEnabled) {
+            drawPill(draw, x, y, fpsWidth, PANEL_HEIGHT);
+            draw.drawCenteredTextWithShadow(client.textRenderer, Text.literal(fpsText),
+                    x + fpsWidth / 2, y + (PANEL_HEIGHT - 9) / 2, 0xFFFFFFFF);
             x += fpsWidth + gap;
         }
 
-        if (ZyvenMod.showProfit) {
-            int color = ZyvenMod.PROFIT.value() > 0 ? 0xFF55E68A :
-                    ZyvenMod.PROFIT.value() < 0 ? 0xFFFF626B : 0xFFFFFFFF;
-            if (ZyvenMod.hudBackground) draw.fill(x, top, x + profitWidth, top + 25, 0xB9000000);
-            draw.drawCenteredTextWithShadow(client.textRenderer,
-                    Text.literal("PROFIT: " + ZyvenMod.PROFIT.formatted()),
-                    x + profitWidth / 2, top + 8, color);
+        if (profitEnabled) {
+            drawPill(draw, x, y, profitWidth, PANEL_HEIGHT);
+            int profitColor = ZyvenMod.PROFIT.value() > 0 ? 0xFF64E99A
+                    : ZyvenMod.PROFIT.value() < 0 ? 0xFFFF737D : 0xFFFFFFFF;
+            draw.drawCenteredTextWithShadow(client.textRenderer, Text.literal(profitText),
+                    x + profitWidth / 2, y + (PANEL_HEIGHT - 9) / 2, profitColor);
+        }
+    }
+
+    private static void drawPill(DrawContext draw, int x, int y, int width, int height) {
+        if (!ZyvenMod.hudBackground) return;
+
+        // Soft shadow and a rounded, translucent glass-like panel.
+        drawRoundedRect(draw, x, y + 2, width, height, CORNER_RADIUS, 0x44000000);
+        drawRoundedRect(draw, x, y, width, height, CORNER_RADIUS, 0xB8000000);
+        // A faint top highlight keeps the panel from looking like a plain square.
+        draw.fill(x + CORNER_RADIUS, y + 1, x + width - CORNER_RADIUS, y + 2, 0x20FFFFFF);
+    }
+
+    private static void drawRoundedRect(DrawContext draw, int x, int y, int width, int height,
+                                        int radius, int color) {
+        for (int row = 0; row < height; row++) {
+            int inset = 0;
+            if (row < radius) {
+                double dy = radius - row - 0.5;
+                inset = Math.max(0, radius - (int) Math.sqrt(Math.max(0, radius * radius - dy * dy)));
+            } else if (row >= height - radius) {
+                double dy = row - (height - radius) + 0.5;
+                inset = Math.max(0, radius - (int) Math.sqrt(Math.max(0, radius * radius - dy * dy)));
+            }
+            draw.fill(x + inset, y + row, x + width - inset, y + row + 1, color);
         }
     }
 }
