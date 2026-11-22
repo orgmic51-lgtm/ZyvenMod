@@ -16,6 +16,7 @@ public final class ModulesScreen extends Screen {
     private double scroll = 0;
     private String search = "";
     private boolean typingSearch = false;
+    private boolean draggingList = false;
 
     private record Module(String name, String description, int category, int id) {}
 
@@ -196,6 +197,7 @@ public final class ModulesScreen extends Screen {
         int listY = searchY + 39, bottom = top + panelH - 17;
         int listH = Math.max(20, bottom - listY);
         if (mx < mainX || mx > mainX + mainW || my < listY || my > bottom) return super.mouseClicked(click, doubled);
+        draggingList = true;
         List<Module> shown = visibleModules();
         int columns = compact ? 1 : 2, gap = 8, cardW = (mainW - gap * (columns - 1)) / columns, cardH = 48;
         for (int i = 0; i < shown.size(); i++) {
@@ -207,6 +209,21 @@ public final class ModulesScreen extends Screen {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+        if (draggingList) {
+            scroll -= deltaY;
+            return true;
+        }
+        return super.mouseDragged(click, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseReleased(Click click) {
+        draggingList = false;
+        return super.mouseReleased(click);
     }
 
     @Override
