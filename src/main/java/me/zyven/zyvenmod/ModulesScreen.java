@@ -6,10 +6,7 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public final class ModulesScreen extends Screen {
-    private String search = "";
     private int category = 0;
-    private boolean fakeItems = false;
-    private boolean profitHud = true;
 
     public ModulesScreen() { super(Text.literal("ZyvenMod Modules")); }
 
@@ -31,9 +28,9 @@ public final class ModulesScreen extends Screen {
         }
         panel(d, left + 125, top + 42, left + 366, top + 70, 0xFF10151E);
         d.drawText(textRenderer, "Search modules...", left + 137, top + 52, 0xFF758195, false);
-        card(d, left + 125, top + 82, "Profit HUD", "Shows your running net profit", profitHud);
-        card(d, left + 125, top + 128, "Fake Items", "Visual-only inventory disguises", fakeItems);
-        d.drawText(textRenderer, "More modules will appear here as they are added.",
+        card(d, left + 125, top + 82, "Profit HUD", "Shows your running net profit", ZyvenMod.showProfit);
+        card(d, left + 125, top + 128, "Fake Items", "Disguises named End Stone visually", ZyvenMod.fakeItemsEnabled);
+        d.drawText(textRenderer, "Fake Items only changes the client-side icon.",
                 left + 126, top + 204, 0xFF7F8A9D, false);
         super.render(d, mouseX, mouseY, delta);
     }
@@ -57,10 +54,10 @@ public final class ModulesScreen extends Screen {
             int y = top + 50 + i * 30;
             if (mx >= left + 20 && mx <= left + 110 && my >= y && my <= y + 24) category = i;
         }
-        if (mx >= left + 125 && mx <= left + 366 && my >= top + 82 && my <= top + 120) {
-            profitHud = !profitHud; ZyvenMod.showProfit = profitHud;
-        }
-        if (mx >= left + 125 && mx <= left + 366 && my >= top + 128 && my <= top + 166) fakeItems = !fakeItems;
+        if (mx >= left + 125 && mx <= left + 366 && my >= top + 82 && my <= top + 120)
+            ZyvenMod.showProfit = !ZyvenMod.showProfit;
+        if (mx >= left + 125 && mx <= left + 366 && my >= top + 128 && my <= top + 166)
+            ZyvenMod.fakeItemsEnabled = !ZyvenMod.fakeItemsEnabled;
         return super.mouseClicked(mx, my, button);
     }
 
