@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 public final class ZyvenMod implements ClientModInitializer {
     public static final ProfitTracker PROFIT = new ProfitTracker();
     public static boolean showProfit = true;
+    public static boolean fakeItemsEnabled = false;
     private static KeyBinding modulesKey;
     private static KeyBinding auctionKey;
 
@@ -35,8 +36,10 @@ public final class ZyvenMod implements ClientModInitializer {
                 else if (client.currentScreen instanceof ModulesScreen) client.setScreen(null);
             }
             while (auctionKey.wasPressed()) {
-                if (client.currentScreen == null) client.setScreen(new AuctionScreen());
-                else if (client.currentScreen instanceof AuctionScreen) client.setScreen(null);
+                if (client.currentScreen == null) {
+                    if (client.player != null) client.player.networkHandler.sendChatCommand("ah");
+                    else client.setScreen(new AuctionScreen());
+                } else if (client.currentScreen instanceof AuctionScreen) client.setScreen(null);
             }
         });
 
