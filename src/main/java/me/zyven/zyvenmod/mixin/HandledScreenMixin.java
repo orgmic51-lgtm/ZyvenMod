@@ -2,6 +2,7 @@ package me.zyven.zyvenmod.mixin;
 
 import me.zyven.zyvenmod.ZyvenMod;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -25,14 +26,15 @@ public abstract class HandledScreenMixin {
     private void zyven$drawFakeHostItem(DrawContext context, Slot slot, int mouseX, int mouseY, CallbackInfo ci) {
         if (!ZyvenMod.fakeItemsEnabled) return;
         ItemStack original = slot.getStack();
-        if (original.isEmpty() || !original.isOf(Items.END_STONE) || !original.hasCustomName()) return;
+        Text customName = original.getCustomName();
+        if (original.isEmpty() || !original.isOf(Items.END_STONE) || customName == null) return;
 
-        String hostName = original.getName().getString();
+        String hostName = customName.getString();
         Item fake = FakeItemMap.itemFor(hostName);
         if (fake == null) return;
 
         ItemStack visual = new ItemStack(fake, original.getCount());
-        visual.setCustomName(Text.literal(hostName));
+        visual.set(DataComponentTypes.CUSTOM_NAME, customName);
         context.fill(x + slot.x, y + slot.y, x + slot.x + 16, y + slot.y + 16, 0xFF30343B);
         context.drawItem(visual, x + slot.x, y + slot.y);
         context.drawStackOverlay(net.minecraft.client.MinecraftClient.getInstance().textRenderer,
