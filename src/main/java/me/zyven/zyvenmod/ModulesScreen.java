@@ -23,6 +23,7 @@ public final class ModulesScreen extends Screen {
     private static final String[] CATEGORIES = {"All", "HUD", "Visuals", "Client"};
     private static final Module[] MODULES = {
             new Module("Profit HUD", "Shows your running net profit", 1, 0),
+            new Module("FPS HUD", "Shows your current frames per second", 1, 7),
             new Module("Fake Items", "Client-side inventory icon disguise", 3, 1),
             new Module("Viewmodel", "Customize held-item position and scale", 2, 2),
             new Module("Custom Sky", "Use a personal sky appearance", 2, 3),
@@ -42,6 +43,7 @@ public final class ModulesScreen extends Screen {
             case 4 -> ZyvenMod.hatsEnabled;
             case 5 -> ZyvenMod.crosshairStyleEnabled;
             case 6 -> ZyvenMod.cleanHudEnabled;
+            case 7 -> ZyvenMod.showFps;
             default -> false;
         };
     }
@@ -55,6 +57,7 @@ public final class ModulesScreen extends Screen {
             case 4 -> ZyvenMod.hatsEnabled = !ZyvenMod.hatsEnabled;
             case 5 -> ZyvenMod.crosshairStyleEnabled = !ZyvenMod.crosshairStyleEnabled;
             case 6 -> ZyvenMod.cleanHudEnabled = !ZyvenMod.cleanHudEnabled;
+            case 7 -> ZyvenMod.showFps = !ZyvenMod.showFps;
         }
     }
 
@@ -204,7 +207,11 @@ public final class ModulesScreen extends Screen {
             int col = i % columns, row = i / columns;
             int x = mainX + col * (cardW + gap), y = listY + row * (cardH + 7) - (int)scroll;
             if (mx >= x && mx <= x + cardW && my >= y && my <= y + cardH) {
-                toggle(shown.get(i).id());
+                if (click.button() == 1) {
+                    if (client != null) client.setScreen(new ModuleSettingsScreen(shown.get(i).id(), shown.get(i).name()));
+                } else {
+                    toggle(shown.get(i).id());
+                }
                 return true;
             }
         }
