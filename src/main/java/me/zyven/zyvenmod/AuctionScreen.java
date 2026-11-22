@@ -1,6 +1,8 @@
 package me.zyven.zyvenmod;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -37,21 +39,24 @@ public final class AuctionScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mx, double my, int button) {
+    public boolean mouseClicked(Click click, boolean doubled) {
+        double mx = click.x();
+        double my = click.y();
         int x = width / 2 - 205, y = height / 2 - 130;
         for (int i = 0; i < 3; i++) {
             int tx = x + 16 + i * 91;
             if (mx >= tx && mx <= tx + 82 && my >= y + 49 && my <= y + 73) tab = i;
         }
-        return super.mouseClicked(mx, my, button);
+        return super.mouseClicked(click, doubled);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyInput input) {
+        int keyCode = input.key();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_O) {
             close(); return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(input);
     }
     @Override public boolean shouldPause() { return false; }
 }
