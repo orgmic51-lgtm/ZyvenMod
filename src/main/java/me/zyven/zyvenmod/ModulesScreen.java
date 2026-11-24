@@ -49,7 +49,10 @@ public final class ModulesScreen extends Screen {
             new Module("Hats", "Christmas hat cosmetic", 2, 4),
             new Module("ZyvenClient Cape", "Christmas cape using your server icon", 2, 9),
             new Module("Crosshair Style", "Customize your crosshair", 2, 5),
-            new Module("Clean HUD", "Hide selected non-essential elements", 1, 6)
+            new Module("Clean HUD", "Hide selected non-essential elements", 1, 6),
+            new Module("Ping HUD", "Show your live server latency", 1, 12),
+            new Module("Coordinates HUD", "Show your current XYZ position", 1, 13),
+            new Module("Armor HUD", "Show your current armor points", 1, 14)
     };
 
     public ModulesScreen() { super(Text.literal("Zyven Client")); }
@@ -67,6 +70,9 @@ public final class ModulesScreen extends Screen {
             case 8 -> ZyvenMod.payAlertsEnabled;
             case 9 -> ZyvenMod.zyvenCapeEnabled;
             case 11 -> ZyvenMod.zyNameBadgeEnabled;
+            case 12 -> ZyvenMod.showPingHud;
+            case 13 -> ZyvenMod.showCoordinatesHud;
+            case 14 -> ZyvenMod.showArmorHud;
             default -> false;
         };
     }
@@ -84,6 +90,9 @@ public final class ModulesScreen extends Screen {
             case 8 -> ZyvenMod.payAlertsEnabled = !ZyvenMod.payAlertsEnabled;
             case 9 -> ZyvenMod.zyvenCapeEnabled = !ZyvenMod.zyvenCapeEnabled;
             case 11 -> ZyvenMod.zyNameBadgeEnabled = !ZyvenMod.zyNameBadgeEnabled;
+            case 12 -> ZyvenMod.showPingHud = !ZyvenMod.showPingHud;
+            case 13 -> ZyvenMod.showCoordinatesHud = !ZyvenMod.showCoordinatesHud;
+            case 14 -> ZyvenMod.showArmorHud = !ZyvenMod.showArmorHud;
         }
         ZyvenMod.saveUserSettings();
     }
@@ -146,17 +155,22 @@ public final class ModulesScreen extends Screen {
         renderBackground(d, mouseX, mouseY, delta);
         Layout l = layout();
         scroll = Math.max(0, Math.min(scroll, l.maxScroll()));
-        int accent = 0xFF38CFFF;
+        int accent = 0xFF45C9FF;
         int left = l.left(), top = l.top(), panelW = l.panelW(), panelH = l.panelH();
 
-        rounded(d, left, top + 3, panelW, panelH, 12, 0x65000000);
-        rounded(d, left, top, panelW, panelH, 12, 0xF00A0F18);
-        rounded(d, left + 1, top + 1, panelW - 2, l.compact() ? 35 : 51, 11, 0xFF111B28);
-        d.fill(left + 12, top + (l.compact() ? 34 : 50),
-                left + panelW - 12, top + (l.compact() ? 35 : 51), 0x3338CFFF);
+        rounded(d, left - 2, top + 4, panelW + 4, panelH + 3, 17, 0x70000000);
+        rounded(d, left, top, panelW, panelH, 16, 0xFF23364B);
+        rounded(d, left + 1, top + 1, panelW - 2, panelH - 2, 15, 0xF20A111C);
+        rounded(d, left + 2, top + 2, panelW - 4, l.compact() ? 37 : 53, 14, 0xFF111E2E);
+        d.fill(left + 14, top + (l.compact() ? 36 : 52),
+                left + panelW - 14, top + (l.compact() ? 37 : 53), 0x5538CFFF);
+        d.fill(left + 14, top + 2, left + panelW / 3, top + 4, 0xFF3AAEFF);
+        d.fill(left + panelW / 3, top + 2, left + panelW * 2 / 3, top + 4, 0xFF3CD5E8);
+        d.fill(left + panelW * 2 / 3, top + 2, left + panelW - 14, top + 4, 0xFF7D8BFF);
 
-        d.drawText(textRenderer, "ZYVEN", left + 14, top + (l.compact() ? 8 : 13), accent, true);
-        d.drawText(textRenderer, "CLIENT", left + 68, top + (l.compact() ? 8 : 13), 0xFFF4F7FC, true);
+        d.drawText(textRenderer, "◆", left + 13, top + (l.compact() ? 7 : 13), accent, true);
+        d.drawText(textRenderer, "ZYVEN", left + 29, top + (l.compact() ? 8 : 13), 0xFFF4F8FF, true);
+        d.drawText(textRenderer, "CLIENT", left + 85, top + (l.compact() ? 8 : 13), 0xFF8EA7BE, true);
         if (!l.compact()) {
             d.drawText(textRenderer, "MODULAR CONTROL CENTER",
                     left + 14, top + 31, 0xFF8294AA, false);
@@ -201,15 +215,17 @@ public final class ModulesScreen extends Screen {
             boolean hovered = mouseX >= x && mouseX <= x + l.cardW()
                     && mouseY >= y && mouseY <= y + l.cardH();
 
-            rounded(d, x, y + 2, l.cardW(), l.cardH(), 8, 0x48000000);
-            rounded(d, x, y, l.cardW(), l.cardH(), 8,
-                    on ? 0xFF172B37 : hovered ? 0xFF202B39 : 0xFF151E2B);
-            if (on) rounded(d, x + 1, y + 7, 3, l.cardH() - 14, 2, accent);
+            rounded(d, x, y + 2, l.cardW(), l.cardH(), 11, 0x4A000000);
+            rounded(d, x, y, l.cardW(), l.cardH(), 11,
+                    on ? 0xFF183344 : hovered ? 0xFF202E40 : 0xFF141F2D);
+            rounded(d, x + 1, y + 1, l.cardW() - 2, l.cardH() - 2, 10,
+                    on ? 0xFF192B3A : 0xFF151F2D);
+            if (on || hovered) rounded(d, x + 1, y + 8, 3, l.cardH() - 16, 2, accent);
 
             int iconSize = l.compact() ? 27 : 34;
             int iconY = y + (l.cardH() - iconSize) / 2;
-            rounded(d, x + 7, iconY, iconSize, iconSize, 7,
-                    on ? 0xFF16465A : 0xFF222E3D);
+            rounded(d, x + 7, iconY, iconSize, iconSize, 8,
+                    on ? 0xFF16506B : 0xFF243449);
             String icon = module.name().substring(0, Math.min(2, module.name().length()))
                     .toUpperCase(Locale.ROOT);
             d.drawCenteredTextWithShadow(textRenderer, icon,
