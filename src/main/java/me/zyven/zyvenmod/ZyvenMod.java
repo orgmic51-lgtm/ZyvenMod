@@ -71,10 +71,20 @@ public final class ZyvenMod implements ClientModInitializer {
             tickPaymentAlert();
         });
 
-        ClientReceiveMessageEvents.GAME.register((message, overlay) ->
-                PROFIT.readIncoming(message.getString()));
+        // Message parsing must never interfere with chat or server command handling.
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            try {
+                PROFIT.readIncoming(message.getString());
+            } catch (RuntimeException ignored) {
+                // Ignore malformed or unexpected server messages.
+            }
+        });
         ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
-            PROFIT.readOutgoing(message);
+            try {
+                PROFIT.readOutgoing(message);
+            } catch (RuntimeException ignored) {
+                // Never block sending a chat message because of HUD bookkeeping.
+            }
             return true;
         });
     }
