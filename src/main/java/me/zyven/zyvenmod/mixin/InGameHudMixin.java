@@ -26,6 +26,7 @@ public abstract class InGameHudMixin {
 
         drawProfitAndFps(draw, client);
         drawPaymentAlert(draw, client);
+        drawExtraHud(draw, client, player);
     }
 
     @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
@@ -51,6 +52,36 @@ public abstract class InGameHudMixin {
     @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
     private void zyven$cleanStatusEffects(DrawContext draw, RenderTickCounter tickCounter, CallbackInfo ci) {
         if (ZyvenMod.cleanHudEnabled) ci.cancel();
+    }
+
+    private static void drawExtraHud(DrawContext draw, MinecraftClient client, PlayerEntity player) {
+        int y = 12;
+        int gap = 24;
+        if (ZyvenMod.showPingHud && client.getNetworkHandler() != null) {
+            PlayerListEntry entry = client.getNetworkHandler().getPlayerListEntry(player.getName().getString());
+            String value = entry == null ? "PING  --" : "PING  " + entry.getLatency() + " ms";
+            drawInfoPill(draw, client, value, y, 0xFF62D9FF);
+            y += gap;
+        }
+        if (ZyvenMod.showCoordinatesHud) {
+            var pos = player.getBlockPos();
+            String value = "XYZ  " + pos.getX() + "  " + pos.getY() + "  " + pos.getZ();
+            drawInfoPill(draw, client, value, y, 0xFF86E1BB);
+            y += gap;
+        }
+        if (ZyvenMod.showArmorHud) {
+            String value = "ARMOR  " + player.getArmor() + "/20";
+            drawInfoPill(draw, client, value, y, 0xFFFFD477);
+        }
+    }
+
+    private static void drawInfoPill(DrawContext draw, MinecraftClient client,
+                                     String value, int y, int accent) {
+        int width = client.textRenderer.getWidth(value) + 24;
+        drawPill(draw, 12, y, width, 20,
+                opacityColor(0xC5090D14, ZyvenMod.hudOpacity));
+        rounded(draw, 17, y + 5, 3, 10, 2, accent);
+        draw.drawTextWithShadow(client.textRenderer, Text.literal(value), 27, y + 6, 0xFFEAF4FC);
     }
 
     private static void drawProfitAndFps(DrawContext draw, MinecraftClient client) {
