@@ -9,79 +9,105 @@ import org.lwjgl.glfw.GLFW;
 public final class PayAlertSettingsScreen extends Screen {
     private static final int[] COLORS = ZyvenMod.alertColorPresets();
 
-    public PayAlertSettingsScreen() { super(Text.literal("Payment Alert Settings")); }
+    public PayAlertSettingsScreen() {
+        super(Text.literal("Payment Alert Settings"));
+    }
+
+    private boolean compact() {
+        // MJ Launcher commonly presents Minecraft in a short landscape viewport.
+        return width < 600 || height < 500;
+    }
+
+    private int panelWidth() {
+        return Math.min(width - 16, compact() ? 360 : 440);
+    }
+
+    private int panelHeight() {
+        return Math.min(height - 14, compact() ? 224 : 370);
+    }
+
+    private int panelX() { return (width - panelWidth()) / 2; }
+    private int panelY() { return (height - panelHeight()) / 2; }
+    private int rowStart() { return panelY() + (compact() ? 43 : 78); }
+    private int rowHeight() { return compact() ? 24 : 32; }
+    private int rowStep() { return compact() ? 28 : 38; }
 
     @Override
     public void render(DrawContext d, int mouseX, int mouseY, float delta) {
         renderBackground(d, mouseX, mouseY, delta);
-        boolean compact = height < 310;
-        int w = Math.min(width - 20, 440);
-        int h = compact ? Math.min(height - 12, 270) : Math.min(height - 24, 390);
-        int x = (width - w) / 2, y = (height - h) / 2;
+        boolean mobile = compact();
+        int x = panelX(), y = panelY(), w = panelWidth(), h = panelHeight();
+        int accent = 0xFF38CFFF;
 
-        rounded(d, x, y + 3, w, h, 14, 0x60000000);
-        rounded(d, x, y, w, h, 14, 0xF00B111B);
-        int headerH = compact ? 43 : 66;
-        rounded(d, x + 1, y + 1, w - 2, headerH, 13, 0xFF142333);
-        d.fill(x + 16, y + headerH - 1, x + w - 16, y + headerH, 0x5538CFFF);
+        rounded(d, x, y + 3, w, h, 12, 0x60000000);
+        rounded(d, x, y, w, h, 12, 0xF00B111B);
+        rounded(d, x + 1, y + 1, w - 2, mobile ? 37 : 57, 11, 0xFF142333);
+        d.fill(x + 12, y + (mobile ? 36 : 56), x + w - 12, y + (mobile ? 37 : 57), 0x5538CFFF);
 
-        d.drawText(textRenderer, "ZYVEN  /  ALERT STUDIO", x + 17, y + (compact ? 9 : 15),
-                0xFF38CFFF, true);
-        d.drawText(textRenderer, compact ? "Tap to customize" : "Payment notification settings",
-                x + 17, y + (compact ? 25 : 34), 0xFFA5B4C5, false);
-        if (!compact) d.drawText(textRenderer, "Y  •  CLOSE", x + w - 89, y + 17, 0xFF8797A9, false);
+        d.drawText(textRenderer, "ZYVEN  /  ALERT STUDIO", x + 13, y + (mobile ? 8 : 13),
+                accent, true);
+        d.drawText(textRenderer, mobile ? "Payment popup settings" : "Customize incoming payment alerts",
+                x + 13, y + (mobile ? 23 : 31), 0xFFA5B4C5, false);
+        if (!mobile) {
+            d.drawText(textRenderer, "Y  •  CLOSE", x + w - 83, y + 15, 0xFF8797A9, false);
+        }
 
-        int rowX = x + 13, rowW = w - 26;
-        int rowHeight = compact ? 26 : 34;
-        int rowStart = y + (compact ? 49 : 82);
-        int rowStep = compact ? 30 : 40;
-        row(d, rowX, rowStart, rowW, rowHeight, "PAYMENT ALERTS",
+        int rx = x + 12, rw = w - 24;
+        int ry = rowStart(), rh = rowHeight(), step = rowStep();
+        row(d, rx, ry, rw, rh, "PAYMENT ALERTS",
                 ZyvenMod.payAlertsEnabled ? "ON" : "OFF",
                 ZyvenMod.payAlertsEnabled ? 0xFF5BE4A0 : 0xFFFF7481);
-        row(d, rowX, rowStart + rowStep, rowW, rowHeight, "PARTICLE BURST",
+        row(d, rx, ry + step, rw, rh, "PARTICLES",
                 ZyvenMod.payAlertParticles ? "ON" : "OFF",
                 ZyvenMod.payAlertParticles ? 0xFF5BE4A0 : 0xFFFF7481);
-        row(d, rowX, rowStart + rowStep * 2, rowW, rowHeight, "DURATION",
+        row(d, rx, ry + step * 2, rw, rh, "DURATION",
                 ZyvenMod.payAlertDurationSeconds + " SEC", 0xFFB9D9EA);
-        row(d, rowX, rowStart + rowStep * 3, rowW, rowHeight, "MINIMUM PAYMENT",
-                ZyvenMod.formatCompactAmount(ZyvenMod.payAlertMinimum), 0xFF38CFFF);
+        // This row is deliberately prominent and uses a large tap target on phones.
+        row(d, rx, ry + step * 3, rw, rh, "MIN PAY",
+                ZyvenMod.formatCompactAmount(ZyvenMod.payAlertMinimum) + "  ›", accent);
 
-        int colorLabelY = y + (compact ? 174 : 264);
-        d.drawText(textRenderer, "ACCENT COLOR", rowX + 2, colorLabelY, 0xFFE5EDF5, true);
-        if (!compact) d.drawText(textRenderer, "Name + particle color", rowX + 2, colorLabelY + 15, 0xFF8495A9, false);
+        int labelY = mobile ? y + 159 : y + 238;
+        d.drawText(textRenderer, "ALERT COLOR", rx + 2, labelY, 0xFFE5EDF5, true);
+        if (!mobile) {
+            d.drawText(textRenderer, "Payer name and particles", rx + 2, labelY + 14, 0xFF8495A9, false);
+        }
 
-        int swatchSize = compact ? 22 : 25;
-        int gap = Math.max(3, (rowW - 7 * swatchSize) / 6);
-        int totalWidth = 7 * swatchSize + 6 * gap;
-        int swatchX = x + (w - totalWidth) / 2;
-        int swatchY = y + (compact ? 192 : 296);
+        int swatchSize = mobile ? 19 : 24;
+        int gap = Math.max(3, (rw - 7 * swatchSize) / 6);
+        int total = 7 * swatchSize + 6 * gap;
+        int swatchX = x + (w - total) / 2;
+        int swatchY = mobile ? y + 178 : y + 264;
         for (int i = 0; i < COLORS.length; i++) {
             int sx = swatchX + i * (swatchSize + gap);
             boolean selected = ZyvenMod.payAlertColor == COLORS[i];
             rounded(d, sx - (selected ? 2 : 0), swatchY - (selected ? 2 : 0),
                     swatchSize + (selected ? 4 : 0), swatchSize + (selected ? 4 : 0), 7,
                     selected ? 0xFFFFFFFF : 0xFF303B4A);
-            rounded(d, sx + 2, swatchY + 2, swatchSize - 4, swatchSize - 4, 5, COLORS[i]);
+            rounded(d, sx + 2, swatchY + 2, swatchSize - 4, swatchSize - 4,
+                    5, COLORS[i]);
         }
 
-        if (!compact) {
-            int previewY = Math.min(y + h - 45, swatchY + 43);
-            rounded(d, x + 16, previewY, w - 32, 31, 8, 0xFF101A26);
-            d.drawCenteredTextWithShadow(textRenderer, Text.literal("PREVIEW   Alex paid you   +1B"),
-                    width / 2, previewY + 11, ZyvenMod.payAlertColor);
-            d.drawCenteredTextWithShadow(textRenderer, "Tap a row to change it  •  ESC to close",
-                    width / 2, y + h - 14, 0xFF718398);
+        if (!mobile) {
+            int previewY = y + h - 39;
+            rounded(d, x + 14, previewY, w - 28, 25, 7, 0xFF101A26);
+            d.drawCenteredTextWithShadow(textRenderer,
+                    Text.literal("PREVIEW   Alex paid you   +1B"),
+                    width / 2, previewY + 8, ZyvenMod.payAlertColor);
+        } else {
+            d.drawCenteredTextWithShadow(textRenderer,
+                    Text.literal("Tap MIN PAY to cycle the threshold"),
+                    width / 2, y + h - 16, 0xFF8194A9);
         }
         super.render(d, mouseX, mouseY, delta);
     }
 
     private void row(DrawContext d, int x, int y, int w, int h,
                      String label, String value, int valueColor) {
-        rounded(d, x, y, w, h, 8, 0xFF172230);
+        rounded(d, x, y, w, h, 7, 0xFF172230);
         int textY = y + (h - 9) / 2;
-        d.drawText(textRenderer, label, x + 10, textY, 0xFFEAF1F8, true);
-        d.drawText(textRenderer, value, x + w - textRenderer.getWidth(value) - 10,
-                textY, valueColor, true);
+        d.drawText(textRenderer, label, x + 9, textY, 0xFFEAF1F8, true);
+        d.drawText(textRenderer, value,
+                x + w - textRenderer.getWidth(value) - 9, textY, valueColor, true);
     }
 
     private static void rounded(DrawContext d, int x, int y, int w, int h, int radius, int color) {
@@ -101,52 +127,33 @@ public final class PayAlertSettingsScreen extends Screen {
 
     @Override
     public boolean mouseClicked(Click click, boolean doubled) {
-        boolean compact = height < 310;
-        int w = Math.min(width - 20, 440);
-        int h = compact ? Math.min(height - 12, 270) : Math.min(height - 24, 390);
-        int x = (width - w) / 2, y = (height - h) / 2;
-        int rowX = x + 13, rowW = w - 26;
-        int rowStart = y + (compact ? 49 : 82);
-        int rowStep = compact ? 30 : 40;
-        int rowHeight = compact ? 26 : 34;
+        int x = panelX(), y = panelY(), w = panelWidth(), h = panelHeight();
+        int rx = x + 12, rw = w - 24, ry = rowStart(), rh = rowHeight(), step = rowStep();
         double mx = click.x(), my = click.y();
 
-        if (mx >= rowX && mx <= rowX + rowW && my >= rowStart && my <= rowStart + rowHeight) {
-            ZyvenMod.payAlertsEnabled = !ZyvenMod.payAlertsEnabled;
-            return true;
-        }
-        if (mx >= rowX && mx <= rowX + rowW
-                && my >= rowStart + rowStep && my <= rowStart + rowStep + rowHeight) {
-            ZyvenMod.payAlertParticles = !ZyvenMod.payAlertParticles;
-            return true;
-        }
-        if (mx >= rowX && mx <= rowX + rowW
-                && my >= rowStart + rowStep * 2 && my <= rowStart + rowStep * 2 + rowHeight) {
-            ZyvenMod.payAlertDurationSeconds = switch (ZyvenMod.payAlertDurationSeconds) {
-                case 3 -> 4;
-                case 4 -> 6;
-                default -> 3;
-            };
-            return true;
-        }
-
-        if (mx >= rowX && mx <= rowX + rowW
-                && my >= rowStart + rowStep * 3 && my <= rowStart + rowStep * 3 + rowHeight) {
-            double[] minimums = {0, 1_000, 10_000, 100_000, 1_000_000,
-                    10_000_000, 100_000_000, 1_000_000_000};
-            int current = 0;
-            for (int i = 0; i < minimums.length; i++) {
-                if (minimums[i] == ZyvenMod.payAlertMinimum) current = i;
+        for (int i = 0; i < 4; i++) {
+            int rowY = ry + i * step;
+            if (mx >= rx && mx <= rx + rw && my >= rowY && my <= rowY + rh) {
+                switch (i) {
+                    case 0 -> ZyvenMod.payAlertsEnabled = !ZyvenMod.payAlertsEnabled;
+                    case 1 -> ZyvenMod.payAlertParticles = !ZyvenMod.payAlertParticles;
+                    case 2 -> ZyvenMod.payAlertDurationSeconds = switch (ZyvenMod.payAlertDurationSeconds) {
+                        case 3 -> 4;
+                        case 4 -> 6;
+                        default -> 3;
+                    };
+                    case 3 -> cycleMinimum();
+                }
+                return true;
             }
-            ZyvenMod.payAlertMinimum = minimums[(current + 1) % minimums.length];
-            return true;
         }
 
-        int swatchSize = compact ? 22 : 25;
-        int gap = Math.max(3, (rowW - 7 * swatchSize) / 6);
+        boolean mobile = compact();
+        int swatchSize = mobile ? 19 : 24;
+        int gap = Math.max(3, (rw - 7 * swatchSize) / 6);
         int total = 7 * swatchSize + 6 * gap;
         int swatchX = x + (w - total) / 2;
-        int swatchY = y + (compact ? 192 : 296);
+        int swatchY = mobile ? y + 178 : y + 264;
         if (my >= swatchY - 4 && my <= swatchY + swatchSize + 4) {
             for (int i = 0; i < COLORS.length; i++) {
                 int sx = swatchX + i * (swatchSize + gap);
@@ -159,6 +166,19 @@ public final class PayAlertSettingsScreen extends Screen {
         return super.mouseClicked(click, doubled);
     }
 
+    private static void cycleMinimum() {
+        double[] minimums = {0, 1_000, 10_000, 100_000, 1_000_000,
+                10_000_000, 100_000_000, 1_000_000_000};
+        int current = 0;
+        for (int i = 0; i < minimums.length; i++) {
+            if (minimums[i] == ZyvenMod.payAlertMinimum) {
+                current = i;
+                break;
+            }
+        }
+        ZyvenMod.payAlertMinimum = minimums[(current + 1) % minimums.length];
+    }
+
     @Override
     public boolean keyPressed(net.minecraft.client.input.KeyInput input) {
         if (input.key() == GLFW.GLFW_KEY_ESCAPE || input.key() == GLFW.GLFW_KEY_Y) {
@@ -168,5 +188,6 @@ public final class PayAlertSettingsScreen extends Screen {
         return super.keyPressed(input);
     }
 
-    @Override public boolean shouldPause() { return false; }
+    @Override
+    public boolean shouldPause() { return false; }
 }
