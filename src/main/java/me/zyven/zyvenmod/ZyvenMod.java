@@ -161,7 +161,7 @@ public final class ZyvenMod implements ClientModInitializer {
 
     private static String compactNumber(double n) {
         return String.format(Locale.US, n >= 100 ? "%.0f" : n >= 10 ? "%.1f" : "%.2f", n)
-                .replaceAll("\\\\.0+$", "").replaceAll("(\\\\.\\\\d*[1-9])0+$", "$1");
+                .replaceAll("\\.0+$", "").replaceAll("(\\.\\d*[1-9])0+$", "$1");
     }
 
     public static int[] alertColorPresets() {
