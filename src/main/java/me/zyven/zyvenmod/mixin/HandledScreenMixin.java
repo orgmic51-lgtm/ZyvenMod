@@ -4,6 +4,7 @@ import me.zyven.zyvenmod.ZyvenMod;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -24,7 +25,8 @@ public abstract class HandledScreenMixin {
 
     @Inject(method = "drawSlot", at = @At("TAIL"))
     private void zyven$drawFakeHostItem(DrawContext context, Slot slot, int mouseX, int mouseY, CallbackInfo ci) {
-        if (!ZyvenMod.fakeItemsEnabled) return;
+        if (!ZyvenMod.fakeItemsEnabled
+                || !(net.minecraft.client.MinecraftClient.getInstance().currentScreen instanceof InventoryScreen)) return;
         ItemStack original = slot.getStack();
         Text customName = original.getCustomName();
         if (original.isEmpty() || !original.isOf(Items.END_STONE) || customName == null) return;
