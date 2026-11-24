@@ -22,7 +22,7 @@ public final class ModuleSettingsScreen extends Screen {
     private boolean compactLayout() { return width < 600 || height < 450; }
 
     private int settingsPanelHeight() {
-        return moduleId == 2 ? (compactLayout() ? 224 : 270) : 190;
+        return moduleId == 2 ? (compactLayout() ? Math.max(160, Math.min(176, height - 8)) : 270) : 190;
     }
 
     private boolean enabled() {
@@ -64,17 +64,17 @@ public final class ModuleSettingsScreen extends Screen {
     }
 
     private void drawAdjustRow(DrawContext d, int x, int y, int w, String label, String value, boolean compact) {
-        int rowHeight = compact ? 22 : 27;
+        int rowHeight = compact ? 14 : 27;
         d.fill(x, y, x + w, y + rowHeight, 0xFF1B2838);
         d.fill(x + 1, y + 1, x + w - 1, y + 2, 0x2238CFFF);
-        d.drawText(textRenderer, label, x + 9, y + (compact ? 7 : 9), 0xFFE5EFF8, true);
+        d.drawText(textRenderer, label, x + 9, y + (compact ? 3 : 9), 0xFFE5EFF8, true);
         int minusX = x + w - 62;
         int plusX = x + w - 29;
-        d.fill(minusX, y + 3, minusX + 24, y + rowHeight - 3, 0xFF263B50);
-        d.fill(plusX, y + 3, plusX + 24, y + rowHeight - 3, 0xFF15536C);
-        d.drawCenteredTextWithShadow(textRenderer, "−", minusX + 12, y + (compact ? 7 : 9), 0xFFEAF7FF);
-        d.drawCenteredTextWithShadow(textRenderer, "+", plusX + 12, y + (compact ? 7 : 9), 0xFFEAFBFF);
-        d.drawCenteredTextWithShadow(textRenderer, value, x + w - 78, y + (compact ? 7 : 9), 0xFF38CFFF);
+        d.fill(minusX, y + 1, minusX + 24, y + rowHeight - 1, 0xFF263B50);
+        d.fill(plusX, y + 1, plusX + 24, y + rowHeight - 1, 0xFF15536C);
+        d.drawCenteredTextWithShadow(textRenderer, "−", minusX + 12, y + (compact ? 3 : 9), 0xFFEAF7FF);
+        d.drawCenteredTextWithShadow(textRenderer, "+", plusX + 12, y + (compact ? 3 : 9), 0xFFEAFBFF);
+        d.drawCenteredTextWithShadow(textRenderer, value, x + w - 78, y + (compact ? 3 : 9), 0xFF38CFFF);
     }
 
     private void drawOpacityRow(DrawContext d, int x, int y, int panelW, int opacity) {
@@ -138,8 +138,8 @@ public final class ModuleSettingsScreen extends Screen {
             float vz = offhandTab ? ZyvenMod.offhandViewmodelZ : ZyvenMod.viewmodelZ;
             float vs = offhandTab ? ZyvenMod.offhandViewmodelScale : ZyvenMod.viewmodelScale;
             boolean small = compactLayout();
-            int rowStart = y + (small ? 110 : 114);
-            int rowStep = small ? 24 : 32;
+            int rowStart = y + (small ? 108 : 114);
+            int rowStep = small ? 15 : 32;
             drawAdjustRow(d, rowX, rowStart, panelW - 32, "X OFFSET", String.format("%.2f", vx), small);
             drawAdjustRow(d, rowX, rowStart + rowStep, panelW - 32, "Y OFFSET", String.format("%.2f", vy), small);
             drawAdjustRow(d, rowX, rowStart + rowStep * 2, panelW - 32, "Z OFFSET", String.format("%.2f", vz), small);
@@ -209,8 +209,8 @@ public final class ModuleSettingsScreen extends Screen {
                 offhandTab = click.x() >= width / 2.0;
                 return true;
             }
-            int rowStart = y + (compactLayout() ? 110 : 114);
-            int rowStep = compactLayout() ? 24 : 32;
+            int rowStart = y + (compactLayout() ? 108 : 114);
+            int rowStep = compactLayout() ? 15 : 32;
             int row = (int) ((click.y() - rowStart) / (double) rowStep);
             if (row >= 0 && row < 4 && click.y() <= rowStart + rowStep * 4) {
                 int minusX = rowX + panelW - 32 - 62;
