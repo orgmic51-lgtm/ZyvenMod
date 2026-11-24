@@ -42,7 +42,7 @@ public final class ModulesScreen extends Screen {
             new Module("FPS Counter", "Live frames per second overlay", 1, 7),
             new Module("Payment Alerts", "Animated player payment notifications", 1, 8),
             new Module("HUD Layout", "Drag your HUD elements anywhere", 1, 10),
-            new Module("ZY Name Badge", "White Z and cyan Y before player names", 2, 11),
+            new Module("Player Icon", "Cyan diamond marker beside player names", 2, 11),
             new Module("Fake Items", "Client-side inventory icon disguise", 3, 1),
             new Module("Viewmodel", "Adjust the held item appearance", 2, 2),
             new Module("Custom Sky", "Personalize the sky appearance", 2, 3),
