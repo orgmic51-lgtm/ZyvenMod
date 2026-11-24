@@ -3,7 +3,6 @@
   "package": "me.zyven.zyvenmod.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "HandledScreenMixin",
     "InGameHudMixin"
   ],
   "injectors": {
