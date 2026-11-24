@@ -29,42 +29,39 @@ public abstract class InGameHudMixin {
     }
 
     private static void drawProfitAndFps(DrawContext draw, MinecraftClient client) {
-        boolean fpsEnabled = ZyvenMod.showFps;
-        boolean profitEnabled = ZyvenMod.showProfit;
-        if (!fpsEnabled && !profitEnabled) return;
-
+        int screenWidth = draw.getScaledWindowWidth();
+        int screenHeight = draw.getScaledWindowHeight();
         String fpsText = client.getCurrentFps() + " FPS";
         String profitValue = ZyvenMod.PROFIT.formatted();
-        String profitLabel = "PROFIT";
-        int horizontalPadding = 15;
-        int fpsWidth = fpsEnabled ? client.textRenderer.getWidth(fpsText) + horizontalPadding * 2 : 0;
-        int profitWidth = profitEnabled ? horizontalPadding * 2
-                + client.textRenderer.getWidth(profitLabel) + 7
-                + client.textRenderer.getWidth(profitValue) : 0;
-        int gap = fpsEnabled && profitEnabled ? 8 : 0;
-        int totalWidth = fpsWidth + profitWidth + gap;
-        int x = 12;
-        int y = draw.getScaledWindowHeight() - HUD_HEIGHT - 12;
 
-        if (fpsEnabled) {
-            drawPill(draw, x, y, fpsWidth, HUD_HEIGHT, opacityColor(0xC5090D14, ZyvenMod.fpsHudOpacity));
+        if (ZyvenMod.showFps) {
+            int w = client.textRenderer.getWidth(fpsText) + 30;
+            int x = Math.round((float) (ZyvenMod.fpsHudX * Math.max(0, screenWidth - w)));
+            int y = Math.round((float) (ZyvenMod.fpsHudY * Math.max(0, screenHeight - HUD_HEIGHT)));
+            drawPill(draw, x, y, w, HUD_HEIGHT,
+                    opacityColor(0xC5090D14, ZyvenMod.fpsHudOpacity));
             draw.drawCenteredTextWithShadow(client.textRenderer, Text.literal(fpsText),
-                    x + fpsWidth / 2, y + 10, 0xFFFFFFFF);
-            x += fpsWidth + gap;
+                    x + w / 2, y + 10, 0xFFFFFFFF);
         }
 
-        if (profitEnabled) {
+        if (ZyvenMod.showProfit) {
+            String label = "PROFIT";
+            int w = 30 + client.textRenderer.getWidth(label) + 7
+                    + client.textRenderer.getWidth(profitValue);
+            int x = Math.round((float) (ZyvenMod.profitHudX * Math.max(0, screenWidth - w)));
+            int y = Math.round((float) (ZyvenMod.profitHudY * Math.max(0, screenHeight - HUD_HEIGHT)));
             int profitColor = ZyvenMod.PROFIT.value() > 0 ? 0xFF62E89A
                     : ZyvenMod.PROFIT.value() < 0 ? 0xFFFF6878 : 0xFFE7EAF0;
             int accent = ZyvenMod.PROFIT.value() > 0 ? 0xFF39D98A
                     : ZyvenMod.PROFIT.value() < 0 ? 0xFFFF5364 : 0xFF8B9AAA;
-            drawPill(draw, x, y, profitWidth, HUD_HEIGHT, opacityColor(0xC5090D14, ZyvenMod.profitHudOpacity));
+            drawPill(draw, x, y, w, HUD_HEIGHT,
+                    opacityColor(0xC5090D14, ZyvenMod.profitHudOpacity));
             rounded(draw, x + 5, y + 7, 3, HUD_HEIGHT - 14, 2, accent);
-            int textX = x + horizontalPadding + 3;
-            draw.drawTextWithShadow(client.textRenderer, Text.literal(profitLabel),
+            int textX = x + 15;
+            draw.drawTextWithShadow(client.textRenderer, Text.literal(label),
                     textX, y + 10, 0xFFB7C0CC);
             draw.drawTextWithShadow(client.textRenderer, Text.literal(profitValue),
-                    textX + client.textRenderer.getWidth(profitLabel) + 7, y + 10, profitColor);
+                    textX + client.textRenderer.getWidth(label) + 7, y + 10, profitColor);
         }
     }
 
@@ -73,74 +70,100 @@ public abstract class InGameHudMixin {
         if (alert == null) return;
 
         long elapsed = System.currentTimeMillis() - alert.createdAt;
-        float duration = ZyvenMod.payAlertDurationSeconds * 1000.0f;
+        float duration = Math.max(1.0f, ZyvenMod.payAlertDurationSeconds * 1000.0f);
         float progress = Math.min(1.0f, Math.max(0.0f, elapsed / duration));
-        float fade = progress > 0.82f ? (1.0f - progress) / 0.18f : 1.0f;
-        float entrance = Math.min(1.0f, elapsed / 260.0f);
-        entrance = 1.0f - (float) Math.pow(1.0f - entrance, 3.0);
+        float enterT = Math.min(1.0f, elapsed / 420.0f);
+        float enterEase = 1.0f - (float) Math.pow(1.0f - enterT, 3.0);
+        float exitT = progress > 0.82f ? (progress - 0.82f) / 0.18f : 0.0f;
+        float exitEase = exitT * exitT * (3.0f - 2.0f * exitT);
+        float fade = progress > 0.82f ? 1.0f - exitEase : 1.0f;
+        float zoom = 0.78f + 0.22f * enterEase;
+        zoom *= 1.0f - 0.10f * exitEase;
+
         int screenWidth = draw.getScaledWindowWidth();
         int screenHeight = draw.getScaledWindowHeight();
-        int panelWidth = Math.min(280, screenWidth - 16);
-        int panelHeight = 82;
-        int panelX = (screenWidth - panelWidth) / 2;
-        int targetY = screenHeight / 2 - panelHeight / 2;
-        int panelY = targetY - Math.round((1.0f - entrance) * 26.0f);
+        int panelWidth = Math.min(340, screenWidth - 16);
+        int panelHeight = 112;
+        int actualWidth = Math.max(1, Math.round(panelWidth * zoom));
+        int actualHeight = Math.max(1, Math.round(panelHeight * zoom));
+        int maxX = Math.max(0, screenWidth - panelWidth);
+        int maxY = Math.max(0, screenHeight - panelHeight);
+        int baseX = Math.round((float) (ZyvenMod.paymentHudX * maxX));
+        int baseY = Math.round((float) (ZyvenMod.paymentHudY * maxY));
+        int panelX = baseX + (panelWidth - actualWidth) / 2 + Math.round(exitEase * 78.0f);
+        int panelY = baseY + (panelHeight - actualHeight) / 2
+                - Math.round((1.0f - enterEase) * 58.0f) + Math.round(exitEase * 24.0f);
         int alpha = Math.max(0, Math.min(255, Math.round(fade * 255.0f)));
         int accent = applyAlpha(ZyvenMod.payAlertColor, fade);
         int textWhite = applyAlpha(0xFFFFFFFF, fade);
-        int muted = applyAlpha(0xFF9BAABD, fade);
 
-        // Floating sparkle particles around the card.
         if (ZyvenMod.payAlertParticles) {
             for (ZyvenMod.AlertParticle particle : ZyvenMod.getAlertParticles()) {
-                float particleFade = Math.min(1.0f, particle.life / 12.0f) * fade;
+                float particleFade = Math.min(1.0f, particle.life / 18.0f) * fade;
                 int particleColor = applyAlpha(
-                        (particle.life % 3 == 0) ? 0xFFFFFFFF : ZyvenMod.payAlertColor, particleFade);
-                int px = screenWidth / 2 + (int) particle.x;
-                int py = targetY + 54 + (int) particle.y;
-                draw.fill(px - 1, py - 4, px + 1, py + 5, particleColor);
-                draw.fill(px - 4, py - 1, px + 5, py + 1, particleColor);
+                        particle.life % 4 == 0 ? 0xFFFFFFFF : ZyvenMod.payAlertColor, particleFade);
+                int px = baseX + panelWidth / 2 + (int) particle.x;
+                int py = baseY + panelHeight / 2 + (int) particle.y;
+                int size = particle.life % 3 == 0 ? 3 : 2;
+                draw.fill(px - size, py, px + size + 1, py + 1, particleColor);
+                draw.fill(px, py - size, px + 1, py + size + 1, particleColor);
+                if (particle.life % 2 == 0) {
+                    draw.fill(px - 1, py - 1, px + 2, py + 2, particleColor);
+                }
             }
         }
 
-        rounded(draw, panelX, panelY + 3, panelWidth, panelHeight, 13, applyAlpha(opacityColor(0x70000000, ZyvenMod.paymentHudOpacity), fade));
-        rounded(draw, panelX, panelY, panelWidth, panelHeight, 13, applyAlpha(opacityColor(0xF00B111B, ZyvenMod.paymentHudOpacity), fade));
-        rounded(draw, panelX + 1, panelY + 1, panelWidth - 2, 3, 2, accent);
-        draw.drawCenteredTextWithShadow(client.textRenderer,
-                Text.literal("PAYMENT RECEIVED"), screenWidth / 2, panelY + 12, accent);
+        rounded(draw, panelX, panelY + 4, actualWidth, actualHeight, 14,
+                applyAlpha(opacityColor(0x88000000, ZyvenMod.paymentHudOpacity), fade));
+        rounded(draw, panelX, panelY, actualWidth, actualHeight, 14,
+                applyAlpha(opacityColor(0xF00B111B, ZyvenMod.paymentHudOpacity), fade));
+        rounded(draw, panelX + 1, panelY + 1, actualWidth - 2, 4, 2, accent);
+        draw.drawCenteredTextWithShadow(client.textRenderer, Text.literal("PAYMENT RECEIVED"),
+                panelX + actualWidth / 2, panelY + 13, accent);
 
-        int faceSize = 26;
+        int faceSize = Math.max(34, Math.round(46 * zoom));
         int faceX = panelX + 22;
-        int faceY = panelY + 35;
-        rounded(draw, faceX - 3, faceY - 3, faceSize + 6, faceSize + 6, 9,
+        int faceY = panelY + 42;
+        rounded(draw, faceX - 4, faceY - 4, faceSize + 8, faceSize + 8, 10,
                 applyAlpha(0xFF243546, fade));
-        PlayerListEntry payerEntry = client.getNetworkHandler() == null
-                ? null : client.getNetworkHandler().getPlayerListEntry(alert.payer);
+        PlayerListEntry payerEntry = findPayerEntry(client, alert.payer);
         if (payerEntry != null) {
-            PlayerSkinDrawer.draw(draw, payerEntry.getSkinTextures(), faceX, faceY, faceSize, 0xFFFFFFFF);
+            PlayerSkinDrawer.draw(draw, payerEntry.getSkinTextures(), faceX, faceY, faceSize,
+                    applyAlpha(0xFFFFFFFF, fade));
         } else {
+            // Avoid showing a misleading first-letter avatar when the payer skin is not cached.
             rounded(draw, faceX, faceY, faceSize, faceSize, 7, applyAlpha(0xFF31516A, fade));
-            String initial = alert.payer.isEmpty() ? "?" : alert.payer.substring(0, 1).toUpperCase();
-            draw.drawCenteredTextWithShadow(client.textRenderer, initial,
-                    faceX + faceSize / 2, faceY + 12, textWhite);
+            draw.drawCenteredTextWithShadow(client.textRenderer, Text.literal("SKIN"),
+                    faceX + faceSize / 2, faceY + faceSize / 2 - 4, textWhite);
         }
 
-        int nameX = faceX + faceSize + 13;
-        int nameMaxWidth = Math.max(30, panelWidth - (nameX - panelX) - 15);
+        int nameX = faceX + faceSize + 15;
+        int nameMaxWidth = Math.max(24, panelX + actualWidth - nameX - 14);
         String payerName = client.textRenderer.trimToWidth(alert.payer, nameMaxWidth);
         draw.drawTextWithShadow(client.textRenderer, Text.literal(payerName),
-                nameX, faceY + 12, accent);
-
+                nameX, faceY + 7, applyAlpha(0xFFFFFFFF, fade));
         draw.drawTextWithShadow(client.textRenderer, Text.literal(alert.amount),
                 nameX, faceY + 25, applyAlpha(0xFFFFD45C, fade));
-        draw.fill(panelX + 18, panelY + panelHeight - 8, panelX + panelWidth - 18,
-                panelY + panelHeight - 7, applyAlpha(0x3348D8FF, fade));
-        // Small progress marker gives the notification a subtle timed finish.
-        int progressWidth = Math.max(0, Math.round((panelWidth - 36) * progress));
+
+        draw.fill(panelX + 18, panelY + actualHeight - 9,
+                panelX + actualWidth - 18, panelY + actualHeight - 7,
+                applyAlpha(0x3348D8FF, fade));
+        int progressWidth = Math.max(0,
+                Math.round((actualWidth - 36) * progress));
         if (progressWidth > 0) {
-            draw.fill(panelX + 18, panelY + panelHeight - 8,
-                    panelX + 18 + progressWidth, panelY + panelHeight - 7, accent);
+            draw.fill(panelX + 18, panelY + actualHeight - 9,
+                    panelX + 18 + progressWidth, panelY + actualHeight - 7, accent);
         }
+    }
+
+    private static PlayerListEntry findPayerEntry(MinecraftClient client, String payerName) {
+        if (client.getNetworkHandler() == null || payerName == null) return null;
+        PlayerListEntry exact = client.getNetworkHandler().getPlayerListEntry(payerName);
+        if (exact != null) return exact;
+        for (PlayerListEntry entry : client.getNetworkHandler().getPlayerList()) {
+            if (entry.getProfile().getName().equalsIgnoreCase(payerName)) return entry;
+        }
+        return null;
     }
 
     private static int applyAlpha(int color, float alpha) {
