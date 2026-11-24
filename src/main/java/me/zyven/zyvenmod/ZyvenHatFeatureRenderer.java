@@ -9,6 +9,7 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -35,7 +36,7 @@ public final class ZyvenHatFeatureRenderer
     }
 
     private static Model<PlayerEntityRenderState> model(ModelPart root) {
-        return new Model<PlayerEntityRenderState>(root, RenderLayer::getEntityCutoutNoCull) {
+        return new Model<PlayerEntityRenderState>(root, RenderLayers::entityCutoutNoCull) {
             @Override
             public void setAngles(PlayerEntityRenderState state) {
                 // The feature copies the player head transform immediately before rendering.
@@ -73,8 +74,8 @@ public final class ZyvenHatFeatureRenderer
 
         redHat.resetTransforms();
         whiteTrim.resetTransforms();
-        redHat.getRootPart().copyTransform(getContextModel().head);
-        whiteTrim.getRootPart().copyTransform(getContextModel().head);
+        redHat.getRootPart().setTransform(getContextModel().head.getTransform());
+        whiteTrim.getRootPart().setTransform(getContextModel().head.getTransform());
 
         render(redHat, RED_TEXTURE, matrices, queue, light, state,
                 0xFFFFFFFF, OverlayTexture.DEFAULT_UV);
