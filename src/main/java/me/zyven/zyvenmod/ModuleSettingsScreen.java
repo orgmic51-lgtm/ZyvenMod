@@ -44,6 +44,7 @@ public final class ModuleSettingsScreen extends Screen {
             case 7 -> ZyvenMod.showFps = value;
             case 9 -> ZyvenMod.zyvenCapeEnabled = value;
         }
+        ZyvenMod.saveUserSettings();
     }
 
     private void drawAdjustRow(DrawContext d, int x, int y, int w, String label, String value) {
@@ -157,6 +158,7 @@ public final class ModuleSettingsScreen extends Screen {
                 && click.x() >= rowX && click.x() <= x + panelW - 16
                 && click.y() >= rowY + 38 && click.y() <= rowY + 68) {
             ZyvenMod.hudBackground = !ZyvenMod.hudBackground;
+            ZyvenMod.saveUserSettings();
             return true;
         }
         if ((moduleId == 0 || moduleId == 7)
