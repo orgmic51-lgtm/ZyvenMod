@@ -43,6 +43,8 @@ public final class PayAlertSettingsScreen extends Screen {
                 ZyvenMod.payAlertParticles ? 0xFF5BE4A0 : 0xFFFF7481);
         row(d, rowX, rowStart + rowStep * 2, rowW, rowHeight, "DURATION",
                 ZyvenMod.payAlertDurationSeconds + " SEC", 0xFFB9D9EA);
+        row(d, rowX, rowStart + rowStep * 3, rowW, rowHeight, "MINIMUM PAYMENT",
+                ZyvenMod.formatCompactAmount(ZyvenMod.payAlertMinimum), 0xFF38CFFF);
 
         int colorLabelY = y + (compact ? 174 : 264);
         d.drawText(textRenderer, "ACCENT COLOR", rowX + 2, colorLabelY, 0xFFE5EDF5, true);
@@ -128,11 +130,23 @@ public final class PayAlertSettingsScreen extends Screen {
             return true;
         }
 
+        if (mx >= rowX && mx <= rowX + rowW
+                && my >= rowStart + rowStep * 3 && my <= rowStart + rowStep * 3 + rowHeight) {
+            double[] minimums = {0, 1_000, 10_000, 100_000, 1_000_000,
+                    10_000_000, 100_000_000, 1_000_000_000};
+            int current = 0;
+            for (int i = 0; i < minimums.length; i++) {
+                if (minimums[i] == ZyvenMod.payAlertMinimum) current = i;
+            }
+            ZyvenMod.payAlertMinimum = minimums[(current + 1) % minimums.length];
+            return true;
+        }
+
         int swatchSize = compact ? 22 : 25;
         int gap = Math.max(3, (rowW - 7 * swatchSize) / 6);
         int total = 7 * swatchSize + 6 * gap;
         int swatchX = x + (w - total) / 2;
-        int swatchY = y + (compact ? 169 : 282);
+        int swatchY = y + (compact ? 192 : 296);
         if (my >= swatchY - 4 && my <= swatchY + swatchSize + 4) {
             for (int i = 0; i < COLORS.length; i++) {
                 int sx = swatchX + i * (swatchSize + gap);
