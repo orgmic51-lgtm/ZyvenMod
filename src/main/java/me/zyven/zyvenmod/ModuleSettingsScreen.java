@@ -74,7 +74,11 @@ public final class ModuleSettingsScreen extends Screen {
             d.drawText(textRenderer, ZyvenMod.hudBackground ? "ON" : "OFF",
                     x + panelW - 48, rowY + 11,
                     ZyvenMod.hudBackground ? 0xFF42D98B : 0xFFFF6572, false);
-            rowY += 38;\n            d.fill(rowX, rowY, x + panelW - 16, rowY + 30, 0xFF202A38);\n            d.drawText(textRenderer, "HUD opacity", rowX + 10, rowY + 11, 0xFFF1F5FA, false);\n            d.drawText(textRenderer, ZyvenMod.hudOpacity + "%  ◀ ▶", x + panelW - 91, rowY + 11, 0xFF38CFFF, false);\n        } else if (hasCapeSettings) {
+            rowY += 38;
+            d.fill(rowX, rowY, x + panelW - 16, rowY + 30, 0xFF202A38);
+            d.drawText(textRenderer, "HUD opacity", rowX + 10, rowY + 11, 0xFFF1F5FA, false);
+            d.drawText(textRenderer, ZyvenMod.hudOpacity + "%  ◀ ▶", x + panelW - 91, rowY + 11, 0xFF38CFFF, false);
+        } else if (hasCapeSettings) {
             d.drawCenteredTextWithShadow(textRenderer,
                     Text.literal("Texture: zyvenclient"),
                     width / 2, y + 104, 0xFF38CFFF);
