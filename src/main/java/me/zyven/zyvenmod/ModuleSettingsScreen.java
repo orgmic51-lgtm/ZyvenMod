@@ -121,8 +121,8 @@ public final class ModuleSettingsScreen extends Screen {
             boolean increase = click.x() >= x + panelW / 2.0;
             int current = moduleId == 0 ? ZyvenMod.profitHudOpacity : ZyvenMod.fpsHudOpacity;
             int next = Math.max(0, Math.min(100, current + (increase ? 10 : -10)));
-            if (moduleId == 0) ZyvenMod.profitHudOpacity = next;
-            else ZyvenMod.fpsHudOpacity = next;
+            if (moduleId == 0) ZyvenMod.setProfitHudOpacity(next);
+            else ZyvenMod.setFpsHudOpacity(next);
             return true;
         }
         return super.mouseClicked(click, doubled);
