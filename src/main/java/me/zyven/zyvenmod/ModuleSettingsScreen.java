@@ -9,7 +9,7 @@ import org.lwjgl.glfw.GLFW;
 public final class ModuleSettingsScreen extends Screen {
     private final int moduleId;
     private final String moduleName;
-    private static final String[] HAT_STYLES = {"Santa", "Beanie", "Top Hat", "Crown", "Horns"};
+    private static final String[] HAT_STYLES = {"Santa", "Beanie", "Top Hat", "Crown", "Horns", "Frost Beanie", "Ruby Top Hat", "Emerald Horns"};
     private static final int[] SKY_COLORS = {0xFF399CFF, 0xFF28D7C2, 0xFF9B6DFF, 0xFFFF79B8, 0xFFFFB84D, 0xFFEBF5FF};
 
     public ModuleSettingsScreen(int moduleId, String moduleName) {
