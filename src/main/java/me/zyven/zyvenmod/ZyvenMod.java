@@ -139,6 +139,21 @@ public final class ZyvenMod implements ClientModInitializer {
         saveSettings();
     }
 
+    public static void setProfitHudOpacity(int value) {
+        profitHudOpacity = Math.max(0, Math.min(100, value));
+        saveSettings();
+    }
+
+    public static void setFpsHudOpacity(int value) {
+        fpsHudOpacity = Math.max(0, Math.min(100, value));
+        saveSettings();
+    }
+
+    public static void setPaymentHudOpacity(int value) {
+        paymentHudOpacity = Math.max(0, Math.min(100, value));
+        saveSettings();
+    }
+
     public static void setPayAlertMinimum(double amount) {
         if (!Double.isFinite(amount) || amount < 0) return;
         payAlertMinimum = amount;
