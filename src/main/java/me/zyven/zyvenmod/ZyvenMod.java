@@ -153,7 +153,7 @@ public final class ZyvenMod implements ClientModInitializer {
             profitHudY = clamp01(Double.parseDouble(properties.getProperty("profitHudY", "0.88")));
             paymentHudX = clamp01(Double.parseDouble(properties.getProperty("paymentHudX", "0.34")));
             paymentHudY = clamp01(Double.parseDouble(properties.getProperty("paymentHudY", "0.39")));
-            hatStyle = Math.max(0, Math.min(4, Integer.parseInt(properties.getProperty("hatStyle", "0"))));
+            hatStyle = Math.max(0, Math.min(7, Integer.parseInt(properties.getProperty("hatStyle", "0"))));
             showProfit = Boolean.parseBoolean(properties.getProperty("showProfit", "true"));
             showFps = Boolean.parseBoolean(properties.getProperty("showFps", "true"));
             hudBackground = Boolean.parseBoolean(properties.getProperty("hudBackground", "true"));
@@ -284,7 +284,7 @@ public final class ZyvenMod implements ClientModInitializer {
     }
 
     public static void setHatStyle(int style) {
-        hatStyle = Math.floorMod(style, 5);
+        hatStyle = Math.floorMod(style, 8);
         saveSettings();
     }
 
