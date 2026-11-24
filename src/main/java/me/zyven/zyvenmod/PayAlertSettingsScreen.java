@@ -70,8 +70,9 @@ public final class PayAlertSettingsScreen extends Screen {
         int accent = 0xFF38CFFF;
 
         rounded(d, x, y + 3, w, h, 12, 0x60000000);
-        rounded(d, x, y, w, h, 12, 0xF00B111B);
-        rounded(d, x + 1, y + 1, w - 2, mobile ? 34 : 56, 11, 0xFF142333);
+        rounded(d, x, y, w, h, 12, 0xFF38CFFF);
+        rounded(d, x + 1, y + 1, w - 2, h - 2, 11, 0xF00B111B);
+        rounded(d, x + 2, y + 2, w - 4, mobile ? 34 : 56, 10, 0xFF142333);
         d.fill(x + 12, y + (mobile ? 33 : 55), x + w - 12, y + (mobile ? 34 : 56), 0x5538CFFF);
 
         d.drawText(textRenderer, "ZYVEN  /  ALERT STUDIO", x + 13, y + (mobile ? 7 : 13),
@@ -118,15 +119,12 @@ public final class PayAlertSettingsScreen extends Screen {
                     4, COLORS[i]);
         }
 
-        if (!mobile) {
-            int previewY = y + h - 31;
-            rounded(d, x + 14, previewY, w - 28, 22, 7, 0xFF101A26);
-            d.drawCenteredTextWithShadow(textRenderer,
-                    Text.literal("PREVIEW   Alex paid you   +1B"),
-                    width / 2, previewY + 6, ZyvenMod.payAlertColor);
-        } else {
-            // Keep the mobile panel uncluttered; the current minimum is shown in the input itself.
-        }
+        int previewY = y + h - (mobile ? 28 : 31);
+        int previewH = mobile ? 19 : 22;
+        rounded(d, x + 14, previewY, w - 28, previewH, 7, 0xFF101A26);
+        d.drawCenteredTextWithShadow(textRenderer,
+                Text.literal("▶  PREVIEW ANIMATION  •  TAP TO SHOW"),
+                width / 2, previewY + (mobile ? 5 : 6), ZyvenMod.payAlertColor);
         super.render(d, mouseX, mouseY, delta);
     }
 
@@ -217,6 +215,15 @@ public final class PayAlertSettingsScreen extends Screen {
         if (mx >= buttonX && mx <= buttonX + buttonW
                 && my >= buttonY && my <= buttonY + buttonH) {
             saveMinimum();
+            return true;
+        }
+
+        int previewY = y + h - (compact() ? 28 : 31);
+        int previewH = compact() ? 19 : 22;
+        if (mx >= x + 14 && mx <= x + w - 14
+                && my >= previewY && my <= previewY + previewH) {
+            ZyvenMod.showPaymentAlert("Alex", "+1B");
+            if (client != null) client.setScreen(null);
             return true;
         }
 
