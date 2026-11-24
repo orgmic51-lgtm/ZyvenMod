@@ -10,6 +10,7 @@ public final class ModuleSettingsScreen extends Screen {
     private final int moduleId;
     private final String moduleName;
     private static final String[] HAT_STYLES = {"Santa", "Beanie", "Top Hat", "Crown", "Horns"};
+    private static final int[] SKY_COLORS = {0xFF399CFF, 0xFF28D7C2, 0xFF9B6DFF, 0xFFFF79B8, 0xFFFFB84D, 0xFFEBF5FF};
 
     public ModuleSettingsScreen(int moduleId, String moduleName) {
         super(Text.literal(moduleName + " Settings"));
@@ -79,6 +80,7 @@ public final class ModuleSettingsScreen extends Screen {
         boolean hasViewmodelSettings = moduleId == 2;
         boolean hasCapeSettings = moduleId == 9;
         boolean hasHatSettings = moduleId == 4;
+        boolean hasSkySettings = moduleId == 3;
         if (hasHudSettings) {
             rowY += 38;
             d.fill(rowX, rowY, x + panelW - 16, rowY + 30, 0xFF202A38);
@@ -96,6 +98,20 @@ public final class ModuleSettingsScreen extends Screen {
             drawAdjustRow(d, rowX, y + 121, panelW - 32, "Y OFFSET", String.format("%.2f", ZyvenMod.viewmodelY));
             drawAdjustRow(d, rowX, y + 154, panelW - 32, "Z OFFSET", String.format("%.2f", ZyvenMod.viewmodelZ));
             drawAdjustRow(d, rowX, y + 187, panelW - 32, "SCALE", String.format("%.2f", ZyvenMod.viewmodelScale));
+        } else if (hasSkySettings) {
+            d.fill(rowX, y + 88, x + panelW - 16, y + 132, 0xFF202A38);
+            d.drawText(textRenderer, "SKY TINT", rowX + 10, y + 96, 0xFFF1F5FA, true);
+            d.drawText(textRenderer, "Tap a color", rowX + 10, y + 111, 0xFF9BA8BA, false);
+            int swatch = 18;
+            int gap = 7;
+            int total = SKY_COLORS.length * swatch + (SKY_COLORS.length - 1) * gap;
+            int sx = x + (panelW - total) / 2;
+            for (int i = 0; i < SKY_COLORS.length; i++) {
+                int xx = sx + i * (swatch + gap);
+                d.fill(xx - 2, y + 119, xx + swatch + 2, y + 139, 
+                        ZyvenMod.customSkyColor == SKY_COLORS[i] ? 0xFFFFFFFF : 0xFF566273);
+                d.fill(xx, y + 121, xx + swatch, y + 137, SKY_COLORS[i]);
+            }
         } else if (hasHatSettings) {
             d.fill(rowX, y + 88, x + panelW - 16, y + 132, 0xFF202A38);
             d.drawCenteredTextWithShadow(textRenderer,
@@ -147,6 +163,18 @@ public final class ModuleSettingsScreen extends Screen {
                 };
                 ZyvenMod.setViewmodelValue(row, value);
                 return true;
+            }
+        }
+        if (moduleId == 3 && click.y() >= y + 116 && click.y() <= y + 142) {
+            int swatch = 18, gap = 7;
+            int total = SKY_COLORS.length * swatch + (SKY_COLORS.length - 1) * gap;
+            int sx = x + (panelW - total) / 2;
+            for (int i = 0; i < SKY_COLORS.length; i++) {
+                int xx = sx + i * (swatch + gap);
+                if (click.x() >= xx - 2 && click.x() <= xx + swatch + 2) {
+                    ZyvenMod.setCustomSkyColor(SKY_COLORS[i]);
+                    return true;
+                }
             }
         }
         if (moduleId == 4 && click.x() >= rowX && click.x() <= x + panelW - 16
