@@ -34,6 +34,9 @@ public final class ZyvenMod implements ClientModInitializer {
     public static boolean showFps = true;
     public static boolean hudBackground = true;
     public static int hudOpacity = 70;
+    public static int profitHudOpacity = 85;
+    public static int fpsHudOpacity = 85;
+    public static int paymentHudOpacity = 92;
     public static boolean fakeItemsEnabled = false;
     public static boolean viewmodelEnabled = false;
     public static boolean customSkyEnabled = false;
@@ -123,6 +126,9 @@ public final class ZyvenMod implements ClientModInitializer {
             double loadedMinimum = Double.parseDouble(properties.getProperty("payAlertMinimum", "1000000"));
             if (Double.isFinite(loadedMinimum) && loadedMinimum >= 0) payAlertMinimum = loadedMinimum;
             hudOpacity = Math.max(0, Math.min(100, Integer.parseInt(properties.getProperty("hudOpacity", "70"))));
+            profitHudOpacity = Math.max(0, Math.min(100, Integer.parseInt(properties.getProperty("profitHudOpacity", "85"))));
+            fpsHudOpacity = Math.max(0, Math.min(100, Integer.parseInt(properties.getProperty("fpsHudOpacity", "85"))));
+            paymentHudOpacity = Math.max(0, Math.min(100, Integer.parseInt(properties.getProperty("paymentHudOpacity", "92"))));
         } catch (IOException | NumberFormatException ignored) {
             // A damaged config should never prevent the client from starting.
         }
@@ -143,6 +149,9 @@ public final class ZyvenMod implements ClientModInitializer {
         Properties properties = new Properties();
         properties.setProperty("payAlertMinimum", Double.toString(payAlertMinimum));
         properties.setProperty("hudOpacity", Integer.toString(hudOpacity));
+        properties.setProperty("profitHudOpacity", Integer.toString(profitHudOpacity));
+        properties.setProperty("fpsHudOpacity", Integer.toString(fpsHudOpacity));
+        properties.setProperty("paymentHudOpacity", Integer.toString(paymentHudOpacity));
         Path path = settingsPath();
         try {
             Files.createDirectories(path.getParent());
