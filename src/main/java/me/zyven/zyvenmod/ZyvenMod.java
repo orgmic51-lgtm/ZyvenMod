@@ -48,6 +48,8 @@ public final class ZyvenMod implements ClientModInitializer {
     public static boolean viewmodelEnabled = false;
     public static float viewmodelX = 0.0f, viewmodelY = 0.0f, viewmodelZ = 0.0f;
     public static float viewmodelScale = 1.0f;
+    public static float offhandViewmodelX = 0.0f, offhandViewmodelY = 0.0f, offhandViewmodelZ = 0.0f;
+    public static float offhandViewmodelScale = 1.0f;
     public static boolean customSkyEnabled = false;
     public static int customSkyColor = 0xFF399CFF;
     public static boolean hatsEnabled = false;
@@ -55,6 +57,9 @@ public final class ZyvenMod implements ClientModInitializer {
     public static boolean crosshairStyleEnabled = false;
     public static boolean cleanHudEnabled = false;
     public static boolean zyNameBadgeEnabled = true;
+    public static boolean showPingHud = false;
+    public static boolean showCoordinatesHud = false;
+    public static boolean showArmorHud = false;
 
     public static boolean payAlertsEnabled = true;
     public static boolean payAlertParticles = true;
@@ -174,6 +179,13 @@ public final class ZyvenMod implements ClientModInitializer {
             viewmodelY = clampFloat(Float.parseFloat(properties.getProperty("viewmodelY", "0")), -0.5f, 0.5f);
             viewmodelZ = clampFloat(Float.parseFloat(properties.getProperty("viewmodelZ", "0")), -0.5f, 0.5f);
             viewmodelScale = clampFloat(Float.parseFloat(properties.getProperty("viewmodelScale", "1")), 0.5f, 1.5f);
+            offhandViewmodelX = clampFloat(Float.parseFloat(properties.getProperty("offhandViewmodelX", "0")), -0.5f, 0.5f);
+            offhandViewmodelY = clampFloat(Float.parseFloat(properties.getProperty("offhandViewmodelY", "0")), -0.5f, 0.5f);
+            offhandViewmodelZ = clampFloat(Float.parseFloat(properties.getProperty("offhandViewmodelZ", "0")), -0.5f, 0.5f);
+            offhandViewmodelScale = clampFloat(Float.parseFloat(properties.getProperty("offhandViewmodelScale", "1")), 0.5f, 1.5f);
+            showPingHud = Boolean.parseBoolean(properties.getProperty("showPingHud", "false"));
+            showCoordinatesHud = Boolean.parseBoolean(properties.getProperty("showCoordinatesHud", "false"));
+            showArmorHud = Boolean.parseBoolean(properties.getProperty("showArmorHud", "false"));
         } catch (IOException | NumberFormatException ignored) {
             // A damaged config should never prevent the client from starting.
         }
@@ -210,8 +222,7 @@ public final class ZyvenMod implements ClientModInitializer {
     public static Text decoratePlayerName(Text name) {
         if (!zyNameBadgeEnabled || name == null) return name;
         return Text.empty()
-                .append(Text.literal("Z").setStyle(Style.EMPTY.withColor(0xFFFFFFFF)))
-                .append(Text.literal("Y").setStyle(Style.EMPTY.withColor(0xFF35C9F4)))
+                .append(Text.literal("◆").setStyle(Style.EMPTY.withColor(0xFF35C9F4).withBold(true)))
                 .append(Text.literal(" "))
                 .append(name);
     }
@@ -225,8 +236,7 @@ public final class ZyvenMod implements ClientModInitializer {
             String name = entry.getProfile().name();
             if (raw.startsWith(name + ":") || raw.startsWith("<" + name + ">")) {
                 return Text.empty()
-                        .append(Text.literal("Z").setStyle(Style.EMPTY.withColor(0xFFFFFFFF)))
-                        .append(Text.literal("Y").setStyle(Style.EMPTY.withColor(0xFF35C9F4)))
+                        .append(Text.literal("◆").setStyle(Style.EMPTY.withColor(0xFF35C9F4).withBold(true)))
                         .append(Text.literal(" "))
                         .append(message);
             }
@@ -240,6 +250,16 @@ public final class ZyvenMod implements ClientModInitializer {
             case 1 -> viewmodelY = clampFloat(value, -0.5f, 0.5f);
             case 2 -> viewmodelZ = clampFloat(value, -0.5f, 0.5f);
             case 3 -> viewmodelScale = clampFloat(value, 0.5f, 1.5f);
+        }
+        saveSettings();
+    }
+
+    public static void setOffhandViewmodelValue(int axis, float value) {
+        switch (axis) {
+            case 0 -> offhandViewmodelX = clampFloat(value, -0.5f, 0.5f);
+            case 1 -> offhandViewmodelY = clampFloat(value, -0.5f, 0.5f);
+            case 2 -> offhandViewmodelZ = clampFloat(value, -0.5f, 0.5f);
+            case 3 -> offhandViewmodelScale = clampFloat(value, 0.5f, 1.5f);
         }
         saveSettings();
     }
@@ -328,6 +348,13 @@ public final class ZyvenMod implements ClientModInitializer {
         properties.setProperty("viewmodelY", Float.toString(viewmodelY));
         properties.setProperty("viewmodelZ", Float.toString(viewmodelZ));
         properties.setProperty("viewmodelScale", Float.toString(viewmodelScale));
+        properties.setProperty("offhandViewmodelX", Float.toString(offhandViewmodelX));
+        properties.setProperty("offhandViewmodelY", Float.toString(offhandViewmodelY));
+        properties.setProperty("offhandViewmodelZ", Float.toString(offhandViewmodelZ));
+        properties.setProperty("offhandViewmodelScale", Float.toString(offhandViewmodelScale));
+        properties.setProperty("showPingHud", Boolean.toString(showPingHud));
+        properties.setProperty("showCoordinatesHud", Boolean.toString(showCoordinatesHud));
+        properties.setProperty("showArmorHud", Boolean.toString(showArmorHud));
         Path path = settingsPath();
         try {
             Files.createDirectories(path.getParent());
