@@ -1,6 +1,7 @@
 package me.zyven.zyvenmod;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
@@ -16,6 +17,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +57,7 @@ public final class ZyvenMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        loadSettings();
         KeyBinding.Category category = new KeyBinding.Category(Identifier.of("zyvenmod", "keys"));
         modulesKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.zyvenmod.modules", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, category));
@@ -98,6 +106,42 @@ public final class ZyvenMod implements ClientModInitializer {
             }
             return true;
         });
+    }
+
+
+    private static Path settingsPath() {
+        return FabricLoader.getInstance().getConfigDir().resolve("zyvenmod.properties");
+    }
+
+    private static void loadSettings() {
+        Path path = settingsPath();
+        if (!Files.isRegularFile(path)) return;
+        Properties properties = new Properties();
+        try (InputStream input = Files.newInputStream(path)) {
+            properties.load(input);
+            double loadedMinimum = Double.parseDouble(properties.getProperty("payAlertMinimum", "1000000"));
+            if (Double.isFinite(loadedMinimum) && loadedMinimum >= 0) {
+                payAlertMinimum = loadedMinimum;
+            }
+        } catch (IOException | NumberFormatException ignored) {
+            // A damaged config should never prevent the client from starting.
+        }
+    }
+
+    public static void setPayAlertMinimum(double amount) {
+        if (!Double.isFinite(amount) || amount < 0) return;
+        payAlertMinimum = amount;
+        Properties properties = new Properties();
+        properties.setProperty("payAlertMinimum", Double.toString(amount));
+        Path path = settingsPath();
+        try {
+            Files.createDirectories(path.getParent());
+            try (OutputStream output = Files.newOutputStream(path)) {
+                properties.store(output, "ZyvenMod settings");
+            }
+        } catch (IOException ignored) {
+            // Keep the selected value for this session even if storage is unavailable.
+        }
     }
 
     public static void showPaymentAlert(String payer, String amount) {
