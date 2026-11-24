@@ -4,9 +4,11 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -28,6 +30,7 @@ public final class ZyvenMod implements ClientModInitializer {
     public static boolean viewmodelEnabled = false;
     public static boolean customSkyEnabled = false;
     public static boolean hatsEnabled = false;
+    public static boolean zyvenCapeEnabled = true;
     public static boolean crosshairStyleEnabled = false;
     public static boolean cleanHudEnabled = false;
 
@@ -72,6 +75,12 @@ public final class ZyvenMod implements ClientModInitializer {
         });
 
         // Message parsing must never interfere with chat or server command handling.
+        LivingEntityFeatureRendererRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
+            if (entityRenderer instanceof PlayerEntityRenderer playerRenderer) {
+                registrationHelper.register(new ZyvenHatFeatureRenderer(playerRenderer));
+            }
+        });
+
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             try {
                 PROFIT.readIncoming(message.getString());
