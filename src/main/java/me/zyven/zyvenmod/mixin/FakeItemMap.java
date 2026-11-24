@@ -7,7 +7,10 @@ final class FakeItemMap {
     private FakeItemMap() {}
 
     static Item itemFor(String name) {
-        String normalized = name.toLowerCase(java.util.Locale.ROOT).replace(" ", "");
+        String normalized = name.toLowerCase(java.util.Locale.ROOT)
+                .replaceAll("§[0-9a-fk-or]", "")
+                .replaceAll("[^a-z0-9.]", "");
+        if (normalized.startsWith("hostitem")) normalized = "host" + normalized.substring(8);
         if (!normalized.startsWith("host")) return null;
         String id = normalized.substring(4);
         if (id.endsWith(".1")) id = id.substring(0, id.length() - 2);
