@@ -24,6 +24,10 @@ public final class ZyvenHatFeatureRenderer
             Identifier.of("zyvenmod", "textures/entity/zyven_hat_red.png");
     private static final Identifier WHITE_TEXTURE =
             Identifier.of("zyvenmod", "textures/entity/zyven_hat_white.png");
+    private static final Identifier BEANIE_TEXTURE = Identifier.of("minecraft", "textures/block/blue_wool.png");
+    private static final Identifier TOP_HAT_TEXTURE = Identifier.of("minecraft", "textures/block/black_wool.png");
+    private static final Identifier CROWN_TEXTURE = Identifier.of("minecraft", "textures/block/gold_block.png");
+    private static final Identifier HORNS_TEXTURE = Identifier.of("minecraft", "textures/block/purple_wool.png");
 
     private final Model<PlayerEntityRenderState> redHat;
     private final Model<PlayerEntityRenderState> whiteTrim;
@@ -132,6 +136,13 @@ public final class ZyvenHatFeatureRenderer
             case 4 -> hornsHat;
             default -> redHat;
         };
+        Identifier selectedTexture = switch (ZyvenMod.hatStyle) {
+            case 1 -> BEANIE_TEXTURE;
+            case 2 -> TOP_HAT_TEXTURE;
+            case 3 -> CROWN_TEXTURE;
+            case 4 -> HORNS_TEXTURE;
+            default -> RED_TEXTURE;
+        };
         selected.resetTransforms();
         selected.getRootPart().setTransform(getContextModel().head.getTransform());
 
@@ -143,7 +154,7 @@ public final class ZyvenHatFeatureRenderer
             render(whiteTrim, WHITE_TEXTURE, matrices, queue, light, state,
                     0xFFFFFFFF, OverlayTexture.DEFAULT_UV);
         } else {
-            render(selected, RED_TEXTURE, matrices, queue, light, state,
+            render(selected, selectedTexture, matrices, queue, light, state,
                     0xFFFFFFFF, OverlayTexture.DEFAULT_UV);
         }
     }
