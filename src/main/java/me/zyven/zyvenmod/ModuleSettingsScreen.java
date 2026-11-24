@@ -9,6 +9,7 @@ import org.lwjgl.glfw.GLFW;
 public final class ModuleSettingsScreen extends Screen {
     private final int moduleId;
     private final String moduleName;
+    private static final String[] HAT_STYLES = {"Santa", "Beanie", "Top Hat", "Crown", "Horns"};
 
     public ModuleSettingsScreen(int moduleId, String moduleName) {
         super(Text.literal(moduleName + " Settings"));
@@ -67,6 +68,7 @@ public final class ModuleSettingsScreen extends Screen {
 
         boolean hasHudSettings = moduleId == 0 || moduleId == 7;
         boolean hasCapeSettings = moduleId == 9;
+        boolean hasHatSettings = moduleId == 4;
         if (hasHudSettings) {
             rowY += 38;
             d.fill(rowX, rowY, x + panelW - 16, rowY + 30, 0xFF202A38);
@@ -79,6 +81,14 @@ public final class ModuleSettingsScreen extends Screen {
             d.drawText(textRenderer, "HUD opacity", rowX + 10, rowY + 11, 0xFFF1F5FA, false);
             int opacity = moduleId == 0 ? ZyvenMod.profitHudOpacity : ZyvenMod.fpsHudOpacity;
             d.drawText(textRenderer, opacity + "%  ◀ ▶", x + panelW - 91, rowY + 11, 0xFF38CFFF, false);
+        } else if (hasHatSettings) {
+            d.fill(rowX, y + 88, x + panelW - 16, y + 132, 0xFF202A38);
+            d.drawCenteredTextWithShadow(textRenderer,
+                    Text.literal("HAT STYLE  •  " + HAT_STYLES[Math.floorMod(ZyvenMod.hatStyle, HAT_STYLES.length)]),
+                    width / 2, y + 98, 0xFF38CFFF);
+            d.drawCenteredTextWithShadow(textRenderer,
+                    Text.literal("Tap here to cycle your cosmetic"),
+                    width / 2, y + 115, 0xFFB6C3D1);
         } else if (hasCapeSettings) {
             d.drawCenteredTextWithShadow(textRenderer,
                     Text.literal("Texture: zyvenclient"),
@@ -107,6 +117,11 @@ public final class ModuleSettingsScreen extends Screen {
         if (click.x() >= rowX && click.x() <= x + panelW - 16
                 && click.y() >= rowY && click.y() <= rowY + 30) {
             setEnabled(!enabled());
+            return true;
+        }
+        if (moduleId == 4 && click.x() >= rowX && click.x() <= x + panelW - 16
+                && click.y() >= y + 88 && click.y() <= y + 132) {
+            ZyvenMod.setHatStyle(ZyvenMod.hatStyle + 1);
             return true;
         }
         if ((moduleId == 0 || moduleId == 7)
