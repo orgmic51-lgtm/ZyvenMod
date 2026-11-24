@@ -77,7 +77,8 @@ public final class ModuleSettingsScreen extends Screen {
             rowY += 38;
             d.fill(rowX, rowY, x + panelW - 16, rowY + 30, 0xFF202A38);
             d.drawText(textRenderer, "HUD opacity", rowX + 10, rowY + 11, 0xFFF1F5FA, false);
-            d.drawText(textRenderer, ZyvenMod.hudOpacity + "%  ◀ ▶", x + panelW - 91, rowY + 11, 0xFF38CFFF, false);
+            int opacity = moduleId == 0 ? ZyvenMod.profitHudOpacity : ZyvenMod.fpsHudOpacity;
+            d.drawText(textRenderer, opacity + "%  ◀ ▶", x + panelW - 91, rowY + 11, 0xFF38CFFF, false);
         } else if (hasCapeSettings) {
             d.drawCenteredTextWithShadow(textRenderer,
                     Text.literal("Texture: zyvenclient"),
@@ -112,6 +113,16 @@ public final class ModuleSettingsScreen extends Screen {
                 && click.x() >= rowX && click.x() <= x + panelW - 16
                 && click.y() >= rowY + 38 && click.y() <= rowY + 68) {
             ZyvenMod.hudBackground = !ZyvenMod.hudBackground;
+            return true;
+        }
+        if ((moduleId == 0 || moduleId == 7)
+                && click.x() >= rowX && click.x() <= x + panelW - 16
+                && click.y() >= rowY + 76 && click.y() <= rowY + 106) {
+            boolean increase = click.x() >= x + panelW / 2.0;
+            int current = moduleId == 0 ? ZyvenMod.profitHudOpacity : ZyvenMod.fpsHudOpacity;
+            int next = Math.max(0, Math.min(100, current + (increase ? 10 : -10)));
+            if (moduleId == 0) ZyvenMod.profitHudOpacity = next;
+            else ZyvenMod.fpsHudOpacity = next;
             return true;
         }
         return super.mouseClicked(click, doubled);
