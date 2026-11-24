@@ -82,6 +82,7 @@ public final class ModulesScreen extends Screen {
             case 8 -> ZyvenMod.payAlertsEnabled = !ZyvenMod.payAlertsEnabled;
             case 9 -> ZyvenMod.zyvenCapeEnabled = !ZyvenMod.zyvenCapeEnabled;
         }
+        ZyvenMod.saveUserSettings();
     }
 
     private List<Module> visibleModules() {
