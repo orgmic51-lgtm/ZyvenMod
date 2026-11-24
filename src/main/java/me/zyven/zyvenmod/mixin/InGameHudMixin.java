@@ -28,6 +28,31 @@ public abstract class InGameHudMixin {
         drawPaymentAlert(draw, client);
     }
 
+    @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
+    private void zyven$customCrosshair(DrawContext draw, RenderTickCounter tickCounter, CallbackInfo ci) {
+        if (!ZyvenMod.crosshairStyleEnabled) return;
+        int cx = draw.getScaledWindowWidth() / 2;
+        int cy = draw.getScaledWindowHeight() / 2;
+        int cyan = 0xFF55D8FF;
+        int white = 0xFFEAFBFF;
+        draw.fill(cx - 1, cy - 7, cx + 2, cy - 2, cyan);
+        draw.fill(cx - 1, cy + 2, cx + 2, cy + 7, cyan);
+        draw.fill(cx - 7, cy - 1, cx - 2, cy + 2, cyan);
+        draw.fill(cx + 2, cy - 1, cx + 7, cy + 2, cyan);
+        draw.fill(cx - 1, cy - 1, cx + 2, cy + 2, white);
+        ci.cancel();
+    }
+
+    @Inject(method = "renderScoreboardSidebar", at = @At("HEAD"), cancellable = true)
+    private void zyven$cleanSidebar(DrawContext draw, RenderTickCounter tickCounter, CallbackInfo ci) {
+        if (ZyvenMod.cleanHudEnabled) ci.cancel();
+    }
+
+    @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
+    private void zyven$cleanStatusEffects(DrawContext draw, RenderTickCounter tickCounter, CallbackInfo ci) {
+        if (ZyvenMod.cleanHudEnabled) ci.cancel();
+    }
+
     private static void drawProfitAndFps(DrawContext draw, MinecraftClient client) {
         int screenWidth = draw.getScaledWindowWidth();
         int screenHeight = draw.getScaledWindowHeight();
