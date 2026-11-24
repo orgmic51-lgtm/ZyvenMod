@@ -6,7 +6,8 @@
     "InGameHudMixin",
     "PlayerCapeMixin",
     "ViewmodelMixin",
-    "HandledScreenMixin"
+    "HandledScreenMixin",
+    "SkyRenderingMixin"
   ],
   "injectors": {
     "defaultRequire": 1
