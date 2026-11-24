@@ -192,19 +192,19 @@ public final class PayAlertSettingsScreen extends Screen {
         double mx = click.x(), my = click.y();
 
         if (mx >= rx && mx <= rx + rw && my >= ry && my <= ry + rh) {
-            ZyvenMod.payAlertsEnabled = !ZyvenMod.payAlertsEnabled;
+            ZyvenMod.setPayAlertEnabled(!ZyvenMod.payAlertsEnabled);
             return true;
         }
         if (mx >= rx && mx <= rx + rw && my >= ry + step && my <= ry + step + rh) {
-            ZyvenMod.payAlertParticles = !ZyvenMod.payAlertParticles;
+            ZyvenMod.setPayAlertParticles(!ZyvenMod.payAlertParticles);
             return true;
         }
         if (mx >= rx && mx <= rx + rw && my >= ry + step * 2 && my <= ry + step * 2 + rh) {
-            ZyvenMod.payAlertDurationSeconds = switch (ZyvenMod.payAlertDurationSeconds) {
+            ZyvenMod.setPayAlertDuration(switch (ZyvenMod.payAlertDurationSeconds) {
                 case 3 -> 4;
                 case 4 -> 6;
                 default -> 3;
-            };
+            });
             return true;
         }
 
@@ -237,7 +237,7 @@ public final class PayAlertSettingsScreen extends Screen {
             for (int i = 0; i < COLORS.length; i++) {
                 int sx = swatchX + i * (swatchSize + gap);
                 if (mx >= sx - 3 && mx <= sx + swatchSize + 3) {
-                    ZyvenMod.payAlertColor = COLORS[i];
+                    ZyvenMod.setPayAlertColor(COLORS[i]);
                     return true;
                 }
             }
