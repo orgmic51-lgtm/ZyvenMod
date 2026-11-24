@@ -140,8 +140,8 @@ public final class HudLayoutScreen extends Screen {
             return true;
         }
         if (input.key() == GLFW.GLFW_KEY_R) {
-            xs[0] = 0.02; ys[0] = 0.78;
-            xs[1] = 0.02; ys[1] = 0.84;
+            xs[0] = 0.02; ys[0] = 0.68;
+            xs[1] = 0.02; ys[1] = 0.88;
             xs[2] = 0.34; ys[2] = 0.39;
             save();
             return true;
