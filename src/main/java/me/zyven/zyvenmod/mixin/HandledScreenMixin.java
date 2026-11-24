@@ -4,10 +4,8 @@ import me.zyven.zyvenmod.ZyvenMod;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
@@ -25,21 +23,24 @@ public abstract class HandledScreenMixin {
 
     @Inject(method = "drawSlot", at = @At("TAIL"))
     private void zyven$drawFakeHostItem(DrawContext context, Slot slot, int mouseX, int mouseY, CallbackInfo ci) {
-        if (!ZyvenMod.fakeItemsEnabled
-                || !(net.minecraft.client.MinecraftClient.getInstance().currentScreen instanceof InventoryScreen)) return;
-        ItemStack original = slot.getStack();
-        Text customName = original.getCustomName();
-        if (original.isEmpty() || !original.isOf(Items.END_STONE) || customName == null) return;
+        if (!ZyvenMod.fakeItemsEnabled || slot == null) return;
+        try {
+            ItemStack original = slot.getStack();
+            if (original.isEmpty()) return;
+            Text customName = original.getCustomName();
+            if (customName == null) return;
 
-        String hostName = customName.getString();
-        Item fake = FakeItemMap.itemFor(hostName);
-        if (fake == null) return;
+            Item fake = FakeItemMap.itemFor(customName.getString());
+            if (fake == null) return;
 
-        ItemStack visual = new ItemStack(fake, original.getCount());
-        visual.set(DataComponentTypes.CUSTOM_NAME, customName);
-        context.fill(x + slot.x, y + slot.y, x + slot.x + 16, y + slot.y + 16, 0xFF30343B);
-        context.drawItem(visual, x + slot.x, y + slot.y);
-        context.drawStackOverlay(net.minecraft.client.MinecraftClient.getInstance().textRenderer,
-                visual, x + slot.x, y + slot.y);
+            // Render-only disguise: the real slot stack and click behavior are untouched.
+            ItemStack visual = new ItemStack(fake, original.getCount());
+            context.fill(x + slot.x, y + slot.y, x + slot.x + 16, y + slot.y + 16, 0xFF202A35);
+            context.drawItem(visual, x + slot.x, y + slot.y);
+            context.drawStackOverlay(net.minecraft.client.MinecraftClient.getInstance().textRenderer,
+                    visual, x + slot.x, y + slot.y);
+        } catch (RuntimeException ignored) {
+            // A custom container slot must never crash the screen because of a visual disguise.
+        }
     }
 }
