@@ -37,12 +37,14 @@ public final class ZyvenMod implements ClientModInitializer {
     public static int profitHudOpacity = 85;
     public static int fpsHudOpacity = 85;
     public static int paymentHudOpacity = 92;
-    public static double fpsHudX = 0.02, fpsHudY = 0.78;
-    public static double profitHudX = 0.02, profitHudY = 0.84;
+    public static double fpsHudX = 0.02, fpsHudY = 0.68;
+    public static double profitHudX = 0.02, profitHudY = 0.88;
     public static double paymentHudX = 0.34, paymentHudY = 0.39;
     public static int hatStyle = 0;
     public static boolean fakeItemsEnabled = false;
     public static boolean viewmodelEnabled = false;
+    public static float viewmodelX = 0.0f, viewmodelY = 0.0f, viewmodelZ = 0.0f;
+    public static float viewmodelScale = 1.0f;
     public static boolean customSkyEnabled = false;
     public static boolean hatsEnabled = false;
     public static boolean zyvenCapeEnabled = true;
@@ -141,12 +143,30 @@ public final class ZyvenMod implements ClientModInitializer {
             fpsHudOpacity = Math.max(0, Math.min(100, Integer.parseInt(properties.getProperty("fpsHudOpacity", "85"))));
             paymentHudOpacity = Math.max(0, Math.min(100, Integer.parseInt(properties.getProperty("paymentHudOpacity", "92"))));
             fpsHudX = clamp01(Double.parseDouble(properties.getProperty("fpsHudX", "0.02")));
-            fpsHudY = clamp01(Double.parseDouble(properties.getProperty("fpsHudY", "0.78")));
+            fpsHudY = clamp01(Double.parseDouble(properties.getProperty("fpsHudY", "0.68")));
             profitHudX = clamp01(Double.parseDouble(properties.getProperty("profitHudX", "0.02")));
-            profitHudY = clamp01(Double.parseDouble(properties.getProperty("profitHudY", "0.84")));
+            profitHudY = clamp01(Double.parseDouble(properties.getProperty("profitHudY", "0.88")));
             paymentHudX = clamp01(Double.parseDouble(properties.getProperty("paymentHudX", "0.34")));
             paymentHudY = clamp01(Double.parseDouble(properties.getProperty("paymentHudY", "0.39")));
             hatStyle = Math.max(0, Math.min(4, Integer.parseInt(properties.getProperty("hatStyle", "0"))));
+            showProfit = Boolean.parseBoolean(properties.getProperty("showProfit", "true"));
+            showFps = Boolean.parseBoolean(properties.getProperty("showFps", "true"));
+            hudBackground = Boolean.parseBoolean(properties.getProperty("hudBackground", "true"));
+            fakeItemsEnabled = Boolean.parseBoolean(properties.getProperty("fakeItemsEnabled", "false"));
+            viewmodelEnabled = Boolean.parseBoolean(properties.getProperty("viewmodelEnabled", "false"));
+            customSkyEnabled = Boolean.parseBoolean(properties.getProperty("customSkyEnabled", "false"));
+            hatsEnabled = Boolean.parseBoolean(properties.getProperty("hatsEnabled", "false"));
+            zyvenCapeEnabled = Boolean.parseBoolean(properties.getProperty("zyvenCapeEnabled", "true"));
+            crosshairStyleEnabled = Boolean.parseBoolean(properties.getProperty("crosshairStyleEnabled", "false"));
+            cleanHudEnabled = Boolean.parseBoolean(properties.getProperty("cleanHudEnabled", "false"));
+            payAlertsEnabled = Boolean.parseBoolean(properties.getProperty("payAlertsEnabled", "true"));
+            payAlertParticles = Boolean.parseBoolean(properties.getProperty("payAlertParticles", "true"));
+            payAlertColor = Integer.parseInt(properties.getProperty("payAlertColor", Integer.toString(payAlertColor)));
+            payAlertDurationSeconds = Math.max(2, Math.min(10, Integer.parseInt(properties.getProperty("payAlertDurationSeconds", "4"))));
+            viewmodelX = clampFloat(Float.parseFloat(properties.getProperty("viewmodelX", "0")), -0.5f, 0.5f);
+            viewmodelY = clampFloat(Float.parseFloat(properties.getProperty("viewmodelY", "0")), -0.5f, 0.5f);
+            viewmodelZ = clampFloat(Float.parseFloat(properties.getProperty("viewmodelZ", "0")), -0.5f, 0.5f);
+            viewmodelScale = clampFloat(Float.parseFloat(properties.getProperty("viewmodelScale", "1")), 0.5f, 1.5f);
         } catch (IOException | NumberFormatException ignored) {
             // A damaged config should never prevent the client from starting.
         }
@@ -169,6 +189,44 @@ public final class ZyvenMod implements ClientModInitializer {
 
     public static void setPaymentHudOpacity(int value) {
         paymentHudOpacity = Math.max(0, Math.min(100, value));
+        saveSettings();
+    }
+
+    private static float clampFloat(float value, float min, float max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    public static void saveUserSettings() {
+        saveSettings();
+    }
+
+    public static void setViewmodelValue(int axis, float value) {
+        switch (axis) {
+            case 0 -> viewmodelX = clampFloat(value, -0.5f, 0.5f);
+            case 1 -> viewmodelY = clampFloat(value, -0.5f, 0.5f);
+            case 2 -> viewmodelZ = clampFloat(value, -0.5f, 0.5f);
+            case 3 -> viewmodelScale = clampFloat(value, 0.5f, 1.5f);
+        }
+        saveSettings();
+    }
+
+    public static void setPayAlertEnabled(boolean enabled) {
+        payAlertsEnabled = enabled;
+        saveSettings();
+    }
+
+    public static void setPayAlertParticles(boolean enabled) {
+        payAlertParticles = enabled;
+        saveSettings();
+    }
+
+    public static void setPayAlertDuration(int seconds) {
+        payAlertDurationSeconds = Math.max(2, Math.min(10, seconds));
+        saveSettings();
+    }
+
+    public static void setPayAlertColor(int color) {
+        payAlertColor = color;
         saveSettings();
     }
 
@@ -211,6 +269,24 @@ public final class ZyvenMod implements ClientModInitializer {
         properties.setProperty("paymentHudX", Double.toString(paymentHudX));
         properties.setProperty("paymentHudY", Double.toString(paymentHudY));
         properties.setProperty("hatStyle", Integer.toString(hatStyle));
+        properties.setProperty("showProfit", Boolean.toString(showProfit));
+        properties.setProperty("showFps", Boolean.toString(showFps));
+        properties.setProperty("hudBackground", Boolean.toString(hudBackground));
+        properties.setProperty("fakeItemsEnabled", Boolean.toString(fakeItemsEnabled));
+        properties.setProperty("viewmodelEnabled", Boolean.toString(viewmodelEnabled));
+        properties.setProperty("customSkyEnabled", Boolean.toString(customSkyEnabled));
+        properties.setProperty("hatsEnabled", Boolean.toString(hatsEnabled));
+        properties.setProperty("zyvenCapeEnabled", Boolean.toString(zyvenCapeEnabled));
+        properties.setProperty("crosshairStyleEnabled", Boolean.toString(crosshairStyleEnabled));
+        properties.setProperty("cleanHudEnabled", Boolean.toString(cleanHudEnabled));
+        properties.setProperty("payAlertsEnabled", Boolean.toString(payAlertsEnabled));
+        properties.setProperty("payAlertParticles", Boolean.toString(payAlertParticles));
+        properties.setProperty("payAlertColor", Integer.toString(payAlertColor));
+        properties.setProperty("payAlertDurationSeconds", Integer.toString(payAlertDurationSeconds));
+        properties.setProperty("viewmodelX", Float.toString(viewmodelX));
+        properties.setProperty("viewmodelY", Float.toString(viewmodelY));
+        properties.setProperty("viewmodelZ", Float.toString(viewmodelZ));
+        properties.setProperty("viewmodelScale", Float.toString(viewmodelScale));
         Path path = settingsPath();
         try {
             Files.createDirectories(path.getParent());
