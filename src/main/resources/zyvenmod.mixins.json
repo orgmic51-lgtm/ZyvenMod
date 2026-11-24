@@ -3,7 +3,8 @@
   "package": "me.zyven.zyvenmod.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "InGameHudMixin"
+    "InGameHudMixin",
+    "PlayerCapeMixin"
   ],
   "injectors": {
     "defaultRequire": 1
