@@ -121,19 +121,28 @@ public final class ZyvenMod implements ClientModInitializer {
         try (InputStream input = Files.newInputStream(path)) {
             properties.load(input);
             double loadedMinimum = Double.parseDouble(properties.getProperty("payAlertMinimum", "1000000"));
-            if (Double.isFinite(loadedMinimum) && loadedMinimum >= 0) {
-                payAlertMinimum = loadedMinimum;
-            }
+            if (Double.isFinite(loadedMinimum) && loadedMinimum >= 0) payAlertMinimum = loadedMinimum;
+            hudOpacity = Math.max(0, Math.min(100, Integer.parseInt(properties.getProperty("hudOpacity", "70"))));
         } catch (IOException | NumberFormatException ignored) {
             // A damaged config should never prevent the client from starting.
         }
     }
 
-    public static void setHudOpacity(int value) {\n        hudOpacity = Math.max(0, Math.min(100, value));\n        saveSettings();\n    }\n\n    private static void saveSettings() {\n        Properties properties = new Properties();\n        properties.setProperty("payAlertMinimum", Double.toString(payAlertMinimum));\n        properties.setProperty("hudOpacity", Integer.toString(hudOpacity));\n        Path path = settingsPath();\n        try {\n            Files.createDirectories(path.getParent());\n            try (OutputStream output = Files.newOutputStream(path)) {\n                properties.store(output, "ZyvenMod settings");\n            }\n        } catch (IOException ignored) { }\n    }\n\n    public static void setPayAlertMinimum(double amount) {
+    public static void setHudOpacity(int value) {
+        hudOpacity = Math.max(0, Math.min(100, value));
+        saveSettings();
+    }
+
+    public static void setPayAlertMinimum(double amount) {
         if (!Double.isFinite(amount) || amount < 0) return;
         payAlertMinimum = amount;
+        saveSettings();
+    }
+
+    private static void saveSettings() {
         Properties properties = new Properties();
-        properties.setProperty("payAlertMinimum", Double.toString(amount));\n        properties.setProperty("hudOpacity", Integer.toString(hudOpacity));
+        properties.setProperty("payAlertMinimum", Double.toString(payAlertMinimum));
+        properties.setProperty("hudOpacity", Integer.toString(hudOpacity));
         Path path = settingsPath();
         try {
             Files.createDirectories(path.getParent());
@@ -141,7 +150,7 @@ public final class ZyvenMod implements ClientModInitializer {
                 properties.store(output, "ZyvenMod settings");
             }
         } catch (IOException ignored) {
-            // Keep the selected value for this session even if storage is unavailable.
+            // Keep selected settings for the session if storage is unavailable.
         }
     }
 
