@@ -28,6 +28,9 @@ public final class ZyvenHatFeatureRenderer
     private static final Identifier TOP_HAT_TEXTURE = Identifier.of("minecraft", "textures/block/black_wool.png");
     private static final Identifier CROWN_TEXTURE = Identifier.of("minecraft", "textures/block/gold_block.png");
     private static final Identifier HORNS_TEXTURE = Identifier.of("minecraft", "textures/block/purple_wool.png");
+    private static final Identifier FROST_TEXTURE = Identifier.of("minecraft", "textures/block/white_wool.png");
+    private static final Identifier RUBY_TEXTURE = Identifier.of("minecraft", "textures/block/red_wool.png");
+    private static final Identifier EMERALD_TEXTURE = Identifier.of("minecraft", "textures/block/emerald_block.png");
 
     private final Model<PlayerEntityRenderState> redHat;
     private final Model<PlayerEntityRenderState> whiteTrim;
@@ -133,7 +136,9 @@ public final class ZyvenHatFeatureRenderer
             case 1 -> beanieHat;
             case 2 -> topHat;
             case 3 -> crownHat;
-            case 4 -> hornsHat;
+            case 4, 7 -> hornsHat;
+            case 5 -> beanieHat;
+            case 6 -> topHat;
             default -> redHat;
         };
         Identifier selectedTexture = switch (ZyvenMod.hatStyle) {
@@ -141,6 +146,9 @@ public final class ZyvenHatFeatureRenderer
             case 2 -> TOP_HAT_TEXTURE;
             case 3 -> CROWN_TEXTURE;
             case 4 -> HORNS_TEXTURE;
+            case 5 -> FROST_TEXTURE;
+            case 6 -> RUBY_TEXTURE;
+            case 7 -> EMERALD_TEXTURE;
             default -> RED_TEXTURE;
         };
         selected.resetTransforms();
