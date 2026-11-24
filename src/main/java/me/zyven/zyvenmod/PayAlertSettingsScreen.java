@@ -27,7 +27,7 @@ public final class PayAlertSettingsScreen extends Screen {
     }
 
     private int panelHeight() {
-        return Math.max(170, Math.min(height - 20, compact() ? 204 : 350));
+        return Math.max(170, Math.min(height - 20, compact() ? 246 : 350));
     }
 
     private int panelX() { return (width - panelWidth()) / 2; }
@@ -35,9 +35,9 @@ public final class PayAlertSettingsScreen extends Screen {
     private int rowStart() { return panelY() + (compact() ? 39 : 68); }
     private int rowHeight() { return compact() ? 20 : 28; }
     private int rowStep() { return compact() ? 23 : 33; }
-    private int minimumFieldY() { return panelY() + (compact() ? 126 : 190); }
-    private int colorLabelY() { return panelY() + (compact() ? 162 : 231); }
-    private int swatchY() { return panelY() + (compact() ? 178 : 251); }
+    private int minimumFieldY() { return panelY() + (compact() ? 140 : 205); }
+    private int colorLabelY() { return panelY() + (compact() ? 180 : 249); }
+    private int swatchY() { return panelY() + (compact() ? 197 : 267); }
 
     @Override
     protected void init() {
@@ -90,6 +90,8 @@ public final class PayAlertSettingsScreen extends Screen {
                 ZyvenMod.payAlertParticles ? 0xFF5BE4A0 : 0xFFFF7481);
         row(d, rx, ry + step * 2, rw, rh, "DURATION",
                 ZyvenMod.payAlertDurationSeconds + " SEC", 0xFFB9D9EA);
+        row(d, rx, ry + step * 3, rw, rh, "PANEL OPACITY",
+                ZyvenMod.paymentHudOpacity + "%   − / +", 0xFF38CFFF);
 
         d.drawText(textRenderer, "MINIMUM PAY", rx + 2,
                 minimumFieldY() - (mobile ? 12 : 14), 0xFFE5EDF5, true);
@@ -205,6 +207,11 @@ public final class PayAlertSettingsScreen extends Screen {
                 case 4 -> 6;
                 default -> 3;
             });
+            return true;
+        }
+        if (mx >= rx && mx <= rx + rw && my >= ry + step * 3 && my <= ry + step * 3 + rh) {
+            boolean increase = mx >= rx + rw / 2.0;
+            ZyvenMod.setPaymentHudOpacity(ZyvenMod.paymentHudOpacity + (increase ? 10 : -10));
             return true;
         }
 
