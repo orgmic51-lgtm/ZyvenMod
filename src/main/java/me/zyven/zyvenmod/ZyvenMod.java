@@ -46,6 +46,7 @@ public final class ZyvenMod implements ClientModInitializer {
     public static float viewmodelX = 0.0f, viewmodelY = 0.0f, viewmodelZ = 0.0f;
     public static float viewmodelScale = 1.0f;
     public static boolean customSkyEnabled = false;
+    public static int customSkyColor = 0xFF399CFF;
     public static boolean hatsEnabled = false;
     public static boolean zyvenCapeEnabled = true;
     public static boolean crosshairStyleEnabled = false;
@@ -159,6 +160,7 @@ public final class ZyvenMod implements ClientModInitializer {
             zyvenCapeEnabled = Boolean.parseBoolean(properties.getProperty("zyvenCapeEnabled", "true"));
             crosshairStyleEnabled = Boolean.parseBoolean(properties.getProperty("crosshairStyleEnabled", "false"));
             cleanHudEnabled = Boolean.parseBoolean(properties.getProperty("cleanHudEnabled", "false"));
+            customSkyColor = Integer.parseInt(properties.getProperty("customSkyColor", Integer.toString(customSkyColor)));
             payAlertsEnabled = Boolean.parseBoolean(properties.getProperty("payAlertsEnabled", "true"));
             payAlertParticles = Boolean.parseBoolean(properties.getProperty("payAlertParticles", "true"));
             payAlertColor = Integer.parseInt(properties.getProperty("payAlertColor", Integer.toString(payAlertColor)));
@@ -244,6 +246,11 @@ public final class ZyvenMod implements ClientModInitializer {
         saveSettings();
     }
 
+    public static void setCustomSkyColor(int color) {
+        customSkyColor = color | 0xFF000000;
+        saveSettings();
+    }
+
     public static void setHatStyle(int style) {
         hatStyle = Math.floorMod(style, 5);
         saveSettings();
@@ -279,6 +286,7 @@ public final class ZyvenMod implements ClientModInitializer {
         properties.setProperty("zyvenCapeEnabled", Boolean.toString(zyvenCapeEnabled));
         properties.setProperty("crosshairStyleEnabled", Boolean.toString(crosshairStyleEnabled));
         properties.setProperty("cleanHudEnabled", Boolean.toString(cleanHudEnabled));
+        properties.setProperty("customSkyColor", Integer.toString(customSkyColor));
         properties.setProperty("payAlertsEnabled", Boolean.toString(payAlertsEnabled));
         properties.setProperty("payAlertParticles", Boolean.toString(payAlertParticles));
         properties.setProperty("payAlertColor", Integer.toString(payAlertColor));
