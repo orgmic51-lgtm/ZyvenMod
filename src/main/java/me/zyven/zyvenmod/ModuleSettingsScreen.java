@@ -46,11 +46,19 @@ public final class ModuleSettingsScreen extends Screen {
         }
     }
 
+    private void drawAdjustRow(DrawContext d, int x, int y, int w, String label, String value) {
+        d.fill(x, y, x + w, y + 27, 0xFF202A38);
+        d.drawText(textRenderer, label, x + 9, y + 9, 0xFFF1F5FA, true);
+        String control = "−   " + value + "   +";
+        d.drawText(textRenderer, control,
+                x + w - textRenderer.getWidth(control) - 9, y + 9, 0xFF38CFFF, true);
+    }
+
     @Override
     public void render(DrawContext d, int mouseX, int mouseY, float delta) {
         renderBackground(d, mouseX, mouseY, delta);
         int panelW = Math.min(340, width - 24);
-        int panelH = 190;
+        int panelH = moduleId == 2 ? 250 : 190;
         int x = (width - panelW) / 2;
         int y = (height - panelH) / 2;
         d.fill(x, y, x + panelW, y + panelH, 0xF00D1019);
@@ -67,6 +75,7 @@ public final class ModuleSettingsScreen extends Screen {
         d.drawText(textRenderer, state, x + panelW - 48, rowY + 11, color, false);
 
         boolean hasHudSettings = moduleId == 0 || moduleId == 7;
+        boolean hasViewmodelSettings = moduleId == 2;
         boolean hasCapeSettings = moduleId == 9;
         boolean hasHatSettings = moduleId == 4;
         if (hasHudSettings) {
@@ -81,6 +90,11 @@ public final class ModuleSettingsScreen extends Screen {
             d.drawText(textRenderer, "HUD opacity", rowX + 10, rowY + 11, 0xFFF1F5FA, false);
             int opacity = moduleId == 0 ? ZyvenMod.profitHudOpacity : ZyvenMod.fpsHudOpacity;
             d.drawText(textRenderer, opacity + "%  ◀ ▶", x + panelW - 91, rowY + 11, 0xFF38CFFF, false);
+        } else if (hasViewmodelSettings) {
+            drawAdjustRow(d, rowX, y + 88, panelW - 32, "X OFFSET", String.format("%.2f", ZyvenMod.viewmodelX));
+            drawAdjustRow(d, rowX, y + 121, panelW - 32, "Y OFFSET", String.format("%.2f", ZyvenMod.viewmodelY));
+            drawAdjustRow(d, rowX, y + 154, panelW - 32, "Z OFFSET", String.format("%.2f", ZyvenMod.viewmodelZ));
+            drawAdjustRow(d, rowX, y + 187, panelW - 32, "SCALE", String.format("%.2f", ZyvenMod.viewmodelScale));
         } else if (hasHatSettings) {
             d.fill(rowX, y + 88, x + panelW - 16, y + 132, 0xFF202A38);
             d.drawCenteredTextWithShadow(textRenderer,
@@ -118,6 +132,21 @@ public final class ModuleSettingsScreen extends Screen {
                 && click.y() >= rowY && click.y() <= rowY + 30) {
             setEnabled(!enabled());
             return true;
+        }
+        if (moduleId == 2 && click.x() >= rowX && click.x() <= x + panelW - 16) {
+            int row = (int) ((click.y() - (y + 88)) / 33.0);
+            if (row >= 0 && row < 4 && click.y() <= y + 214) {
+                float step = row == 3 ? 0.05f : 0.02f;
+                float direction = click.x() >= width / 2.0 ? step : -step;
+                float value = switch (row) {
+                    case 0 -> ZyvenMod.viewmodelX + direction;
+                    case 1 -> ZyvenMod.viewmodelY + direction;
+                    case 2 -> ZyvenMod.viewmodelZ + direction;
+                    default -> ZyvenMod.viewmodelScale + direction;
+                };
+                ZyvenMod.setViewmodelValue(row, value);
+                return true;
+            }
         }
         if (moduleId == 4 && click.x() >= rowX && click.x() <= x + panelW - 16
                 && click.y() >= y + 88 && click.y() <= y + 132) {
