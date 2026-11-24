@@ -101,7 +101,7 @@ public final class PayAlertSettingsScreen extends Screen {
         d.drawCenteredTextWithShadow(textRenderer, "−", opacityMinusX + 12,
                 opacityY + (rh - 8) / 2, 0xFFEAF7FF);
         d.drawCenteredTextWithShadow(textRenderer, ZyvenMod.paymentHudOpacity + "%",
-                opacityMinusX - 7 + 25, opacityY + (rh - 8) / 2, 0xFF38CFFF);
+                opacityMinusX - 22, opacityY + (rh - 8) / 2, 0xFF38CFFF);
         d.drawCenteredTextWithShadow(textRenderer, "+", opacityPlusX + 12,
                 opacityY + (rh - 8) / 2, 0xFFEAFBFF);
 
