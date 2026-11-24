@@ -37,6 +37,10 @@ public final class ZyvenMod implements ClientModInitializer {
     public static int profitHudOpacity = 85;
     public static int fpsHudOpacity = 85;
     public static int paymentHudOpacity = 92;
+    public static double fpsHudX = 0.02, fpsHudY = 0.78;
+    public static double profitHudX = 0.02, profitHudY = 0.84;
+    public static double paymentHudX = 0.34, paymentHudY = 0.39;
+    public static int hatStyle = 0;
     public static boolean fakeItemsEnabled = false;
     public static boolean viewmodelEnabled = false;
     public static boolean customSkyEnabled = false;
@@ -55,6 +59,7 @@ public final class ZyvenMod implements ClientModInitializer {
     private static KeyBinding modulesKey;
     private static KeyBinding auctionKey;
     private static KeyBinding payAlertSettingsKey;
+    private static KeyBinding hudLayoutKey;
 
     private static PaymentAlert activePaymentAlert;
     private static final List<AlertParticle> ALERT_PARTICLES = new ArrayList<>();
@@ -69,6 +74,8 @@ public final class ZyvenMod implements ClientModInitializer {
                 "key.zyvenmod.auction", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_O, category));
         payAlertSettingsKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.zyvenmod.pay_alert_settings", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_Y, category));
+        hudLayoutKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.zyvenmod.hud_layout", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_L, category));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (modulesKey.wasPressed()) {
@@ -84,6 +91,10 @@ public final class ZyvenMod implements ClientModInitializer {
             }
             while (payAlertSettingsKey.wasPressed()) {
                 if (client.currentScreen == null) client.setScreen(new PayAlertSettingsScreen());
+            }
+            while (hudLayoutKey.wasPressed()) {
+                if (client.currentScreen == null) client.setScreen(new HudLayoutScreen());
+                else if (client.currentScreen instanceof HudLayoutScreen) client.setScreen(null);
             }
             tickPaymentAlert();
         });
@@ -129,6 +140,13 @@ public final class ZyvenMod implements ClientModInitializer {
             profitHudOpacity = Math.max(0, Math.min(100, Integer.parseInt(properties.getProperty("profitHudOpacity", "85"))));
             fpsHudOpacity = Math.max(0, Math.min(100, Integer.parseInt(properties.getProperty("fpsHudOpacity", "85"))));
             paymentHudOpacity = Math.max(0, Math.min(100, Integer.parseInt(properties.getProperty("paymentHudOpacity", "92"))));
+            fpsHudX = clamp01(Double.parseDouble(properties.getProperty("fpsHudX", "0.02")));
+            fpsHudY = clamp01(Double.parseDouble(properties.getProperty("fpsHudY", "0.78")));
+            profitHudX = clamp01(Double.parseDouble(properties.getProperty("profitHudX", "0.02")));
+            profitHudY = clamp01(Double.parseDouble(properties.getProperty("profitHudY", "0.84")));
+            paymentHudX = clamp01(Double.parseDouble(properties.getProperty("paymentHudX", "0.34")));
+            paymentHudY = clamp01(Double.parseDouble(properties.getProperty("paymentHudY", "0.39")));
+            hatStyle = Math.max(0, Math.min(4, Integer.parseInt(properties.getProperty("hatStyle", "0"))));
         } catch (IOException | NumberFormatException ignored) {
             // A damaged config should never prevent the client from starting.
         }
@@ -154,6 +172,25 @@ public final class ZyvenMod implements ClientModInitializer {
         saveSettings();
     }
 
+    private static double clamp01(double value) {
+        return Math.max(0.0, Math.min(1.0, value));
+    }
+
+    public static void setHudPosition(int id, double x, double y) {
+        double nx = clamp01(x), ny = clamp01(y);
+        switch (id) {
+            case 0 -> { fpsHudX = nx; fpsHudY = ny; }
+            case 1 -> { profitHudX = nx; profitHudY = ny; }
+            case 2 -> { paymentHudX = nx; paymentHudY = ny; }
+        }
+        saveSettings();
+    }
+
+    public static void setHatStyle(int style) {
+        hatStyle = Math.floorMod(style, 5);
+        saveSettings();
+    }
+
     public static void setPayAlertMinimum(double amount) {
         if (!Double.isFinite(amount) || amount < 0) return;
         payAlertMinimum = amount;
@@ -167,6 +204,13 @@ public final class ZyvenMod implements ClientModInitializer {
         properties.setProperty("profitHudOpacity", Integer.toString(profitHudOpacity));
         properties.setProperty("fpsHudOpacity", Integer.toString(fpsHudOpacity));
         properties.setProperty("paymentHudOpacity", Integer.toString(paymentHudOpacity));
+        properties.setProperty("fpsHudX", Double.toString(fpsHudX));
+        properties.setProperty("fpsHudY", Double.toString(fpsHudY));
+        properties.setProperty("profitHudX", Double.toString(profitHudX));
+        properties.setProperty("profitHudY", Double.toString(profitHudY));
+        properties.setProperty("paymentHudX", Double.toString(paymentHudX));
+        properties.setProperty("paymentHudY", Double.toString(paymentHudY));
+        properties.setProperty("hatStyle", Integer.toString(hatStyle));
         Path path = settingsPath();
         try {
             Files.createDirectories(path.getParent());
@@ -188,15 +232,15 @@ public final class ZyvenMod implements ClientModInitializer {
         ALERT_PARTICLES.clear();
         if (payAlertParticles) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
-            for (int i = 0; i < 30; i++) {
+            for (int i = 0; i < 96; i++) {
                 double angle = random.nextDouble(0, Math.PI * 2);
                 double speed = random.nextDouble(0.35, 1.65);
                 ALERT_PARTICLES.add(new AlertParticle(
-                        random.nextDouble(-105, 106),
-                        random.nextDouble(-18, 19),
-                        Math.cos(angle) * speed,
-                        Math.sin(angle) * speed - 0.35,
-                        random.nextInt(18, 37)
+                        random.nextDouble(-185, 186),
+                        random.nextDouble(-75, 76),
+                        Math.cos(angle) * speed * 1.35,
+                        Math.sin(angle) * speed * 1.35 - 0.45,
+                        random.nextInt(24, 52)
                 ));
             }
         }
@@ -280,7 +324,9 @@ public final class ZyvenMod implements ClientModInitializer {
         private static final Pattern PAYER_PAID = Pattern.compile(
                 "(?i)\\b([A-Za-z0-9_]{3,16})\\s+(?:has\\s+)?(?:paid|sent|given)\\s+you\\b");
         private static final Pattern PAYER_FROM = Pattern.compile(
-                "(?i)\\b(?:from|by)\\s+([A-Za-z0-9_]{3,16})\\b");
+                "(?i)\\b(?:from|by|payer\\s*:)\\s*([A-Za-z0-9_]{3,16})\\b");
+        private static final Pattern PAYER_PREFIX = Pattern.compile(
+                "(?i)^\\s*([A-Za-z0-9_]{3,16})\\s+(?:paid|sent|gave)\\s+(?:you|a payment)\\b");
         private double total;
 
         public void readIncoming(String rawMessage) {
@@ -304,6 +350,8 @@ public final class ZyvenMod implements ClientModInitializer {
         }
 
         private String findPayer(String message) {
+            Matcher prefix = PAYER_PREFIX.matcher(message);
+            if (prefix.find()) return prefix.group(1);
             Matcher paid = PAYER_PAID.matcher(message);
             if (paid.find()) return paid.group(1);
             Matcher from = PAYER_FROM.matcher(message);
