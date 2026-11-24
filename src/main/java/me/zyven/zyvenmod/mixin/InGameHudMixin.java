@@ -161,7 +161,7 @@ public abstract class InGameHudMixin {
         PlayerListEntry exact = client.getNetworkHandler().getPlayerListEntry(payerName);
         if (exact != null) return exact;
         for (PlayerListEntry entry : client.getNetworkHandler().getPlayerList()) {
-            if (entry.getProfile().getName().equalsIgnoreCase(payerName)) return entry;
+            if (entry.getProfile().name().equalsIgnoreCase(payerName)) return entry;
         }
         return null;
     }
