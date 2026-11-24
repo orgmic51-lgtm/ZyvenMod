@@ -123,7 +123,7 @@ public final class ModuleSettingsScreen extends Screen {
     @Override
     public boolean mouseClicked(Click click, boolean doubled) {
         int panelW = Math.min(340, width - 24);
-        int panelH = 190;
+        int panelH = moduleId == 2 ? 250 : 190;
         int x = (width - panelW) / 2;
         int y = (height - panelH) / 2;
         int rowX = x + 16;
