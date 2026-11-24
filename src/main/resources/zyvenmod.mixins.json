@@ -5,7 +5,8 @@
   "client": [
     "InGameHudMixin",
     "PlayerCapeMixin",
-    "ViewmodelMixin"
+    "ViewmodelMixin",
+    "HandledScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
