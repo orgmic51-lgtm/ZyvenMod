@@ -102,13 +102,13 @@ public abstract class InGameHudMixin {
         float exitT = progress > 0.82f ? (progress - 0.82f) / 0.18f : 0.0f;
         float exitEase = exitT * exitT * (3.0f - 2.0f * exitT);
         float fade = progress > 0.82f ? 1.0f - exitEase : 1.0f;
-        float zoom = 0.78f + 0.22f * enterEase;
+        float zoom = 0.68f + 0.32f * enterEase;
         zoom *= 1.0f - 0.10f * exitEase;
 
         int screenWidth = draw.getScaledWindowWidth();
         int screenHeight = draw.getScaledWindowHeight();
         int panelWidth = Math.min(340, screenWidth - 16);
-        int panelHeight = 112;
+        int panelHeight = 136;
         int actualWidth = Math.max(1, Math.round(panelWidth * zoom));
         int actualHeight = Math.max(1, Math.round(panelHeight * zoom));
         int maxX = Math.max(0, screenWidth - panelWidth);
@@ -144,11 +144,11 @@ public abstract class InGameHudMixin {
                 applyAlpha(opacityColor(0xF00B111B, ZyvenMod.paymentHudOpacity), fade));
         rounded(draw, panelX + 1, panelY + 1, actualWidth - 2, 4, 2, accent);
         draw.drawCenteredTextWithShadow(client.textRenderer, Text.literal("PAYMENT RECEIVED"),
-                panelX + actualWidth / 2, panelY + 13, accent);
+                panelX + actualWidth / 2, panelY + 16, accent);
 
         int faceSize = Math.max(34, Math.round(46 * zoom));
-        int faceX = panelX + 22;
-        int faceY = panelY + 42;
+        int faceX = panelX + 20;
+        int faceY = panelY + 48;
         rounded(draw, faceX - 4, faceY - 4, faceSize + 8, faceSize + 8, 10,
                 applyAlpha(0xFF243546, fade));
         PlayerListEntry payerEntry = findPayerEntry(client, alert.payer);
@@ -166,9 +166,9 @@ public abstract class InGameHudMixin {
         int nameMaxWidth = Math.max(24, panelX + actualWidth - nameX - 14);
         String payerName = client.textRenderer.trimToWidth(alert.payer, nameMaxWidth);
         draw.drawTextWithShadow(client.textRenderer, Text.literal(payerName),
-                nameX, faceY + 7, applyAlpha(0xFFFFFFFF, fade));
+                nameX, faceY + 13, applyAlpha(0xFFFFFFFF, fade));
         draw.drawTextWithShadow(client.textRenderer, Text.literal(alert.amount),
-                nameX, faceY + 25, applyAlpha(0xFFFFD45C, fade));
+                nameX, faceY + 36, applyAlpha(0xFFFFD45C, fade));
 
         draw.fill(panelX + 18, panelY + actualHeight - 9,
                 panelX + actualWidth - 18, panelY + actualHeight - 7,
