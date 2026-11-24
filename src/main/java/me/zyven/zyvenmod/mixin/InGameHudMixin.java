@@ -149,7 +149,13 @@ public abstract class InGameHudMixin {
         return (resultAlpha << 24) | (color & 0x00FFFFFF);
     }
 
-    private static int opacityColor(int color) {\n        int alpha = (color >>> 24) & 255;\n        alpha = alpha * ZyvenMod.hudOpacity / 100;\n        return (alpha << 24) | (color & 0x00FFFFFF);\n    }\n\n    private static void drawPill(DrawContext draw, int x, int y, int width, int height, int color) {
+    private static int opacityColor(int color) {
+        int alpha = (color >>> 24) & 255;
+        alpha = alpha * ZyvenMod.hudOpacity / 100;
+        return (alpha << 24) | (color & 0x00FFFFFF);
+    }
+
+    private static void drawPill(DrawContext draw, int x, int y, int width, int height, int color) {
         if (!ZyvenMod.hudBackground) return;
         rounded(draw, x, y + 2, width, height, 9, 0x44000000);
         rounded(draw, x, y, width, height, 9, color);
