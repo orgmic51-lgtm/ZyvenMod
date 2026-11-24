@@ -43,11 +43,11 @@ public abstract class InGameHudMixin {
                 + client.textRenderer.getWidth(profitValue) : 0;
         int gap = fpsEnabled && profitEnabled ? 8 : 0;
         int totalWidth = fpsWidth + profitWidth + gap;
-        int x = (draw.getScaledWindowWidth() - totalWidth) / 2;
-        int y = 12;
+        int x = 12;
+        int y = draw.getScaledWindowHeight() - HUD_HEIGHT - 12;
 
         if (fpsEnabled) {
-            drawPill(draw, x, y, fpsWidth, HUD_HEIGHT, opacityColor(0xC5090D14));
+            drawPill(draw, x, y, fpsWidth, HUD_HEIGHT, opacityColor(0xC5090D14, ZyvenMod.fpsHudOpacity));
             draw.drawCenteredTextWithShadow(client.textRenderer, Text.literal(fpsText),
                     x + fpsWidth / 2, y + 10, 0xFFFFFFFF);
             x += fpsWidth + gap;
@@ -58,7 +58,7 @@ public abstract class InGameHudMixin {
                     : ZyvenMod.PROFIT.value() < 0 ? 0xFFFF6878 : 0xFFE7EAF0;
             int accent = ZyvenMod.PROFIT.value() > 0 ? 0xFF39D98A
                     : ZyvenMod.PROFIT.value() < 0 ? 0xFFFF5364 : 0xFF8B9AAA;
-            drawPill(draw, x, y, profitWidth, HUD_HEIGHT, opacityColor(0xC5090D14));
+            drawPill(draw, x, y, profitWidth, HUD_HEIGHT, opacityColor(0xC5090D14, ZyvenMod.profitHudOpacity));
             rounded(draw, x + 5, y + 7, 3, HUD_HEIGHT - 14, 2, accent);
             int textX = x + horizontalPadding + 3;
             draw.drawTextWithShadow(client.textRenderer, Text.literal(profitLabel),
@@ -80,8 +80,8 @@ public abstract class InGameHudMixin {
         entrance = 1.0f - (float) Math.pow(1.0f - entrance, 3.0);
         int screenWidth = draw.getScaledWindowWidth();
         int screenHeight = draw.getScaledWindowHeight();
-        int panelWidth = Math.min(340, screenWidth - 20);
-        int panelHeight = 104;
+        int panelWidth = Math.min(280, screenWidth - 16);
+        int panelHeight = 82;
         int panelX = (screenWidth - panelWidth) / 2;
         int targetY = screenHeight / 2 - panelHeight / 2;
         int panelY = targetY - Math.round((1.0f - entrance) * 26.0f);
@@ -103,13 +103,13 @@ public abstract class InGameHudMixin {
             }
         }
 
-        rounded(draw, panelX, panelY + 3, panelWidth, panelHeight, 13, applyAlpha(0x70000000, fade));
-        rounded(draw, panelX, panelY, panelWidth, panelHeight, 13, applyAlpha(0xF00B111B, fade));
+        rounded(draw, panelX, panelY + 3, panelWidth, panelHeight, 13, applyAlpha(opacityColor(0x70000000, ZyvenMod.paymentHudOpacity), fade));
+        rounded(draw, panelX, panelY, panelWidth, panelHeight, 13, applyAlpha(opacityColor(0xF00B111B, ZyvenMod.paymentHudOpacity), fade));
         rounded(draw, panelX + 1, panelY + 1, panelWidth - 2, 3, 2, accent);
         draw.drawCenteredTextWithShadow(client.textRenderer,
                 Text.literal("PAYMENT RECEIVED"), screenWidth / 2, panelY + 12, accent);
 
-        int faceSize = 34;
+        int faceSize = 26;
         int faceX = panelX + 22;
         int faceY = panelY + 35;
         rounded(draw, faceX - 3, faceY - 3, faceSize + 6, faceSize + 6, 9,
@@ -131,8 +131,8 @@ public abstract class InGameHudMixin {
         draw.drawTextWithShadow(client.textRenderer, Text.literal(payerName),
                 nameX, faceY + 12, accent);
 
-        draw.drawCenteredTextWithShadow(client.textRenderer, Text.literal(alert.amount),
-                screenWidth / 2, panelY + 75, textWhite);
+        draw.drawTextWithShadow(client.textRenderer, Text.literal(alert.amount),
+                nameX, faceY + 25, applyAlpha(0xFFFFD45C, fade));
         draw.fill(panelX + 18, panelY + panelHeight - 8, panelX + panelWidth - 18,
                 panelY + panelHeight - 7, applyAlpha(0x3348D8FF, fade));
         // Small progress marker gives the notification a subtle timed finish.
@@ -149,9 +149,9 @@ public abstract class InGameHudMixin {
         return (resultAlpha << 24) | (color & 0x00FFFFFF);
     }
 
-    private static int opacityColor(int color) {
+    private static int opacityColor(int color, int opacity) {
         int alpha = (color >>> 24) & 255;
-        alpha = alpha * ZyvenMod.hudOpacity / 100;
+        alpha = alpha * Math.max(0, Math.min(100, opacity)) / 100;
         return (alpha << 24) | (color & 0x00FFFFFF);
     }
 
