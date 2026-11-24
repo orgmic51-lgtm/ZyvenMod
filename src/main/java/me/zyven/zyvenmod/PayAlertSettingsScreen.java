@@ -125,9 +125,7 @@ public final class PayAlertSettingsScreen extends Screen {
                     Text.literal("PREVIEW   Alex paid you   +1B"),
                     width / 2, previewY + 6, ZyvenMod.payAlertColor);
         } else {
-            d.drawCenteredTextWithShadow(textRenderer,
-                    Text.literal("Enter 67k / 1m / 2.5b, then tap SET"),
-                    width / 2, y + h - 12, 0xFF8194A9);
+            // Keep the mobile panel uncluttered; the current minimum is shown in the input itself.
         }
         super.render(d, mouseX, mouseY, delta);
     }
@@ -146,7 +144,7 @@ public final class PayAlertSettingsScreen extends Screen {
         String input = minimumField.getText().trim().toLowerCase(Locale.ROOT)
                 .replace(",", "").replace("_", "").replace(" ", "");
         if (input.equals("off") || input.equals("0")) {
-            ZyvenMod.payAlertMinimum = 0;
+            ZyvenMod.setPayAlertMinimum(0);
             minimumStatus = "Minimum alert: OFF";
             return;
         }
@@ -166,7 +164,7 @@ public final class PayAlertSettingsScreen extends Screen {
         try {
             double amount = Double.parseDouble(input) * multiplier;
             if (!Double.isFinite(amount) || amount < 0) throw new NumberFormatException();
-            ZyvenMod.payAlertMinimum = amount;
+            ZyvenMod.setPayAlertMinimum(amount);
             minimumStatus = "Saved minimum: " + ZyvenMod.formatCompactAmount(amount);
         } catch (NumberFormatException ignored) {
             minimumStatus = "Invalid amount. Try 67k, 1m or 2.5b";
