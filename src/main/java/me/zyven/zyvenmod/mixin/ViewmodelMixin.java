@@ -30,7 +30,11 @@ public abstract class ViewmodelMixin {
                                       float equipProgress, MatrixStack matrices,
                                       OrderedRenderCommandQueue queue, int light, CallbackInfo ci) {
         if (!ZyvenMod.viewmodelEnabled || player != MinecraftClient.getInstance().player) return;
-        matrices.translate(ZyvenMod.viewmodelX, ZyvenMod.viewmodelY, ZyvenMod.viewmodelZ);
-        matrices.scale(ZyvenMod.viewmodelScale, ZyvenMod.viewmodelScale, ZyvenMod.viewmodelScale);
+        float x = hand == Hand.OFF_HAND ? ZyvenMod.offhandViewmodelX : ZyvenMod.viewmodelX;
+        float y = hand == Hand.OFF_HAND ? ZyvenMod.offhandViewmodelY : ZyvenMod.viewmodelY;
+        float z = hand == Hand.OFF_HAND ? ZyvenMod.offhandViewmodelZ : ZyvenMod.viewmodelZ;
+        float scale = hand == Hand.OFF_HAND ? ZyvenMod.offhandViewmodelScale : ZyvenMod.viewmodelScale;
+        matrices.translate(x, y, z);
+        matrices.scale(scale, scale, scale);
     }
 }
