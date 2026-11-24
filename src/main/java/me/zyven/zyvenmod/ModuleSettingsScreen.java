@@ -29,6 +29,7 @@ public final class ModuleSettingsScreen extends Screen {
             case 6 -> ZyvenMod.cleanHudEnabled;
             case 7 -> ZyvenMod.showFps;
             case 9 -> ZyvenMod.zyvenCapeEnabled;
+            case 11 -> ZyvenMod.zyNameBadgeEnabled;
             default -> false;
         };
     }
@@ -44,6 +45,7 @@ public final class ModuleSettingsScreen extends Screen {
             case 6 -> ZyvenMod.cleanHudEnabled = value;
             case 7 -> ZyvenMod.showFps = value;
             case 9 -> ZyvenMod.zyvenCapeEnabled = value;
+            case 11 -> ZyvenMod.zyNameBadgeEnabled = value;
         }
         ZyvenMod.saveUserSettings();
     }
@@ -120,6 +122,12 @@ public final class ModuleSettingsScreen extends Screen {
             d.drawCenteredTextWithShadow(textRenderer,
                     Text.literal("Tap here to cycle your cosmetic"),
                     width / 2, y + 115, 0xFFB6C3D1);
+        } else if (moduleId == 11) {
+            d.drawCenteredTextWithShadow(textRenderer,
+                    Text.literal("Z  WHITE   •   Y  CYAN"), width / 2, y + 104, 0xFF38CFFF);
+            d.drawCenteredTextWithShadow(textRenderer,
+                    Text.literal("Shown before player names in TAB, chat and nametags"),
+                    width / 2, y + 119, 0xFF9BA8BA);
         } else if (hasCapeSettings) {
             d.drawCenteredTextWithShadow(textRenderer,
                     Text.literal("Texture: zyvenclient"),
