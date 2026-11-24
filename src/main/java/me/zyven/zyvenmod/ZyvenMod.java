@@ -33,6 +33,7 @@ public final class ZyvenMod implements ClientModInitializer {
     public static boolean showProfit = true;
     public static boolean showFps = true;
     public static boolean hudBackground = true;
+    public static int hudOpacity = 70;
     public static boolean fakeItemsEnabled = false;
     public static boolean viewmodelEnabled = false;
     public static boolean customSkyEnabled = false;
@@ -128,11 +129,11 @@ public final class ZyvenMod implements ClientModInitializer {
         }
     }
 
-    public static void setPayAlertMinimum(double amount) {
+    public static void setHudOpacity(int value) {\n        hudOpacity = Math.max(0, Math.min(100, value));\n        saveSettings();\n    }\n\n    private static void saveSettings() {\n        Properties properties = new Properties();\n        properties.setProperty("payAlertMinimum", Double.toString(payAlertMinimum));\n        properties.setProperty("hudOpacity", Integer.toString(hudOpacity));\n        Path path = settingsPath();\n        try {\n            Files.createDirectories(path.getParent());\n            try (OutputStream output = Files.newOutputStream(path)) {\n                properties.store(output, "ZyvenMod settings");\n            }\n        } catch (IOException ignored) { }\n    }\n\n    public static void setPayAlertMinimum(double amount) {
         if (!Double.isFinite(amount) || amount < 0) return;
         payAlertMinimum = amount;
         Properties properties = new Properties();
-        properties.setProperty("payAlertMinimum", Double.toString(amount));
+        properties.setProperty("payAlertMinimum", Double.toString(amount));\n        properties.setProperty("hudOpacity", Integer.toString(hudOpacity));
         Path path = settingsPath();
         try {
             Files.createDirectories(path.getParent());
