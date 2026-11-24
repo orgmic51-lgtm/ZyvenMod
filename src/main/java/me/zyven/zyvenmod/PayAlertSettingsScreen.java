@@ -186,7 +186,7 @@ public final class PayAlertSettingsScreen extends Screen {
 
     @Override
     public boolean mouseClicked(Click click, boolean doubled) {
-        int x = panelX(), y = panelY(), w = panelWidth();
+        int x = panelX(), y = panelY(), w = panelWidth(), h = panelHeight();
         int rx = x + 12, rw = w - 24;
         int ry = rowStart(), rh = rowHeight(), step = rowStep();
         double mx = click.x(), my = click.y();
