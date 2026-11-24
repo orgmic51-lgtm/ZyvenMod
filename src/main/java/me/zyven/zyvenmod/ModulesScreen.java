@@ -41,6 +41,7 @@ public final class ModulesScreen extends Screen {
             new Module("Profit HUD", "Track money received and sent", 1, 0),
             new Module("FPS Counter", "Live frames per second overlay", 1, 7),
             new Module("Payment Alerts", "Animated player payment notifications", 1, 8),
+            new Module("HUD Layout", "Drag your HUD elements anywhere", 1, 10),
             new Module("Fake Items", "Client-side inventory icon disguise", 3, 1),
             new Module("Viewmodel", "Adjust the held item appearance", 2, 2),
             new Module("Custom Sky", "Personalize the sky appearance", 2, 3),
@@ -226,12 +227,18 @@ public final class ModulesScreen extends Screen {
             d.drawCenteredTextWithShadow(textRenderer, "···", settingsX + 11,
                     y + (l.cardH() - 8) / 2, 0xFFB8C9D9);
 
-            int switchX = x + l.cardW() - 38;
-            rounded(d, switchX, y + (l.cardH() - 15) / 2, 28, 15, 8,
-                    on ? 0xFF167E9D : 0xFF3B4655);
-            rounded(d, on ? switchX + 14 : switchX + 2,
-                    y + (l.cardH() - 11) / 2, 11, 11, 6,
-                    on ? 0xFFE8FBFF : 0xFFBEC8D4);
+            if (module.id() == 10) {
+                rounded(d, x + l.cardW() - 48, y + (l.cardH() - 21) / 2, 40, 21, 6, 0xFF15536C);
+                d.drawCenteredTextWithShadow(textRenderer, "OPEN", x + l.cardW() - 28,
+                        y + (l.cardH() - 8) / 2, 0xFFE8FBFF);
+            } else {
+                int switchX = x + l.cardW() - 38;
+                rounded(d, switchX, y + (l.cardH() - 15) / 2, 28, 15, 8,
+                        on ? 0xFF167E9D : 0xFF3B4655);
+                rounded(d, on ? switchX + 14 : switchX + 2,
+                        y + (l.cardH() - 11) / 2, 11, 11, 6,
+                        on ? 0xFFE8FBFF : 0xFFBEC8D4);
+            }
         }
         d.disableScissor();
 
@@ -376,7 +383,9 @@ public final class ModulesScreen extends Screen {
                     }
                 }
                 if (selected != null) {
-                    if (pressedSettings) {
+                    if (selected.id() == 10) {
+                        client.setScreen(new HudLayoutScreen());
+                    } else if (pressedSettings) {
                         if (selected.id() == 8) client.setScreen(new PayAlertSettingsScreen());
                         else client.setScreen(new ModuleSettingsScreen(selected.id(), selected.name()));
                     } else {
