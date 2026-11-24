@@ -8,6 +8,9 @@ import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.util.Identifier;
@@ -51,6 +54,7 @@ public final class ZyvenMod implements ClientModInitializer {
     public static boolean zyvenCapeEnabled = true;
     public static boolean crosshairStyleEnabled = false;
     public static boolean cleanHudEnabled = false;
+    public static boolean zyNameBadgeEnabled = true;
 
     public static boolean payAlertsEnabled = true;
     public static boolean payAlertParticles = true;
@@ -160,6 +164,7 @@ public final class ZyvenMod implements ClientModInitializer {
             zyvenCapeEnabled = Boolean.parseBoolean(properties.getProperty("zyvenCapeEnabled", "true"));
             crosshairStyleEnabled = Boolean.parseBoolean(properties.getProperty("crosshairStyleEnabled", "false"));
             cleanHudEnabled = Boolean.parseBoolean(properties.getProperty("cleanHudEnabled", "false"));
+            zyNameBadgeEnabled = Boolean.parseBoolean(properties.getProperty("zyNameBadgeEnabled", "true"));
             customSkyColor = Integer.parseInt(properties.getProperty("customSkyColor", Integer.toString(customSkyColor)));
             payAlertsEnabled = Boolean.parseBoolean(properties.getProperty("payAlertsEnabled", "true"));
             payAlertParticles = Boolean.parseBoolean(properties.getProperty("payAlertParticles", "true"));
@@ -200,6 +205,33 @@ public final class ZyvenMod implements ClientModInitializer {
 
     public static void saveUserSettings() {
         saveSettings();
+    }
+
+    public static Text decoratePlayerName(Text name) {
+        if (!zyNameBadgeEnabled || name == null) return name;
+        return Text.empty()
+                .append(Text.literal("Z").setStyle(Style.EMPTY.withColor(0xFFFFFFFF)))
+                .append(Text.literal("Y").setStyle(Style.EMPTY.withColor(0xFF35C9F4)))
+                .append(Text.literal(" "))
+                .append(name);
+    }
+
+    public static Text decorateChatMessage(Text message) {
+        if (!zyNameBadgeEnabled || message == null) return message;
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.getNetworkHandler() == null) return message;
+        String raw = message.getString();
+        for (var entry : client.getNetworkHandler().getPlayerList()) {
+            String name = entry.getProfile().name();
+            if (raw.startsWith(name + ":") || raw.startsWith("<" + name + ">")) {
+                return Text.empty()
+                        .append(Text.literal("Z").setStyle(Style.EMPTY.withColor(0xFFFFFFFF)))
+                        .append(Text.literal("Y").setStyle(Style.EMPTY.withColor(0xFF35C9F4)))
+                        .append(Text.literal(" "))
+                        .append(message);
+            }
+        }
+        return message;
     }
 
     public static void setViewmodelValue(int axis, float value) {
@@ -286,6 +318,7 @@ public final class ZyvenMod implements ClientModInitializer {
         properties.setProperty("zyvenCapeEnabled", Boolean.toString(zyvenCapeEnabled));
         properties.setProperty("crosshairStyleEnabled", Boolean.toString(crosshairStyleEnabled));
         properties.setProperty("cleanHudEnabled", Boolean.toString(cleanHudEnabled));
+        properties.setProperty("zyNameBadgeEnabled", Boolean.toString(zyNameBadgeEnabled));
         properties.setProperty("customSkyColor", Integer.toString(customSkyColor));
         properties.setProperty("payAlertsEnabled", Boolean.toString(payAlertsEnabled));
         properties.setProperty("payAlertParticles", Boolean.toString(payAlertParticles));
