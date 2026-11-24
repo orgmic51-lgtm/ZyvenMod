@@ -39,7 +39,7 @@ public final class ZyvenMod implements ClientModInitializer {
     public static int payAlertColor = 0xFF38CFFF;
     public static int payAlertDurationSeconds = 4;
     // Only incoming payments at or above this amount trigger the popup.
-    public static double payAlertMinimum = 0;
+    public static double payAlertMinimum = 1_000_000;
 
     private static KeyBinding modulesKey;
     private static KeyBinding auctionKey;
