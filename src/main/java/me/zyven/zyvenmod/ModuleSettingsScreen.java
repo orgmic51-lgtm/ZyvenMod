@@ -31,6 +31,9 @@ public final class ModuleSettingsScreen extends Screen {
             case 7 -> ZyvenMod.showFps;
             case 9 -> ZyvenMod.zyvenCapeEnabled;
             case 11 -> ZyvenMod.zyNameBadgeEnabled;
+            case 12 -> ZyvenMod.showPingHud;
+            case 13 -> ZyvenMod.showCoordinatesHud;
+            case 14 -> ZyvenMod.showArmorHud;
             default -> false;
         };
     }
@@ -47,6 +50,9 @@ public final class ModuleSettingsScreen extends Screen {
             case 7 -> ZyvenMod.showFps = value;
             case 9 -> ZyvenMod.zyvenCapeEnabled = value;
             case 11 -> ZyvenMod.zyNameBadgeEnabled = value;
+            case 12 -> ZyvenMod.showPingHud = value;
+            case 13 -> ZyvenMod.showCoordinatesHud = value;
+            case 14 -> ZyvenMod.showArmorHud = value;
         }
         ZyvenMod.saveUserSettings();
     }
