@@ -47,7 +47,7 @@ public abstract class InGameHudMixin {
         int y = 12;
 
         if (fpsEnabled) {
-            drawPill(draw, x, y, fpsWidth, HUD_HEIGHT, 0xC5090D14);
+            drawPill(draw, x, y, fpsWidth, HUD_HEIGHT, opacityColor(0xC5090D14));
             draw.drawCenteredTextWithShadow(client.textRenderer, Text.literal(fpsText),
                     x + fpsWidth / 2, y + 10, 0xFFFFFFFF);
             x += fpsWidth + gap;
@@ -58,7 +58,7 @@ public abstract class InGameHudMixin {
                     : ZyvenMod.PROFIT.value() < 0 ? 0xFFFF6878 : 0xFFE7EAF0;
             int accent = ZyvenMod.PROFIT.value() > 0 ? 0xFF39D98A
                     : ZyvenMod.PROFIT.value() < 0 ? 0xFFFF5364 : 0xFF8B9AAA;
-            drawPill(draw, x, y, profitWidth, HUD_HEIGHT, 0xC5090D14);
+            drawPill(draw, x, y, profitWidth, HUD_HEIGHT, opacityColor(0xC5090D14));
             rounded(draw, x + 5, y + 7, 3, HUD_HEIGHT - 14, 2, accent);
             int textX = x + horizontalPadding + 3;
             draw.drawTextWithShadow(client.textRenderer, Text.literal(profitLabel),
@@ -149,7 +149,7 @@ public abstract class InGameHudMixin {
         return (resultAlpha << 24) | (color & 0x00FFFFFF);
     }
 
-    private static void drawPill(DrawContext draw, int x, int y, int width, int height, int color) {
+    private static int opacityColor(int color) {\n        int alpha = (color >>> 24) & 255;\n        alpha = alpha * ZyvenMod.hudOpacity / 100;\n        return (alpha << 24) | (color & 0x00FFFFFF);\n    }\n\n    private static void drawPill(DrawContext draw, int x, int y, int width, int height, int color) {
         if (!ZyvenMod.hudBackground) return;
         rounded(draw, x, y + 2, width, height, 9, 0x44000000);
         rounded(draw, x, y, width, height, 9, color);
