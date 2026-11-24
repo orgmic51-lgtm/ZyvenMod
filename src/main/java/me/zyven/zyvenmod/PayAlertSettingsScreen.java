@@ -36,8 +36,8 @@ public final class PayAlertSettingsScreen extends Screen {
     private int rowHeight() { return compact() ? 20 : 28; }
     private int rowStep() { return compact() ? 23 : 33; }
     private int minimumFieldY() { return panelY() + (compact() ? 126 : 190); }
-    private int colorLabelY() { return panelY() + (compact() ? 153 : 231); }
-    private int swatchY() { return panelY() + (compact() ? 168 : 251); }
+    private int colorLabelY() { return panelY() + (compact() ? 162 : 231); }
+    private int swatchY() { return panelY() + (compact() ? 178 : 251); }
 
     @Override
     protected void init() {
