@@ -90,8 +90,20 @@ public final class PayAlertSettingsScreen extends Screen {
                 ZyvenMod.payAlertParticles ? 0xFF5BE4A0 : 0xFFFF7481);
         row(d, rx, ry + step * 2, rw, rh, "DURATION",
                 ZyvenMod.payAlertDurationSeconds + " SEC", 0xFFB9D9EA);
-        row(d, rx, ry + step * 3, rw, rh, "PANEL OPACITY",
-                ZyvenMod.paymentHudOpacity + "%   − / +", 0xFF38CFFF);
+        int opacityY = ry + step * 3;
+        rounded(d, rx, opacityY, rw, rh, 7, 0xFF172230);
+        int opacityMinusX = rx + rw - 70;
+        int opacityPlusX = rx + rw - 29;
+        d.drawText(textRenderer, "PANEL OPACITY", rx + 9,
+                opacityY + (rh - 9) / 2, 0xFFEAF1F8, true);
+        rounded(d, opacityMinusX, opacityY + 2, 25, rh - 4, 5, 0xFF263B50);
+        rounded(d, opacityPlusX, opacityY + 2, 25, rh - 4, 5, 0xFF15536C);
+        d.drawCenteredTextWithShadow(textRenderer, "−", opacityMinusX + 12,
+                opacityY + (rh - 8) / 2, 0xFFEAF7FF);
+        d.drawCenteredTextWithShadow(textRenderer, ZyvenMod.paymentHudOpacity + "%",
+                opacityMinusX - 7 + 25, opacityY + (rh - 8) / 2, 0xFF38CFFF);
+        d.drawCenteredTextWithShadow(textRenderer, "+", opacityPlusX + 12,
+                opacityY + (rh - 8) / 2, 0xFFEAFBFF);
 
         d.drawText(textRenderer, "MINIMUM PAY", rx + 2,
                 minimumFieldY() - (mobile ? 12 : 14), 0xFFE5EDF5, true);
@@ -209,9 +221,12 @@ public final class PayAlertSettingsScreen extends Screen {
             });
             return true;
         }
-        if (mx >= rx && mx <= rx + rw && my >= ry + step * 3 && my <= ry + step * 3 + rh) {
-            boolean increase = mx >= rx + rw / 2.0;
-            ZyvenMod.setPaymentHudOpacity(ZyvenMod.paymentHudOpacity + (increase ? 10 : -10));
+        if (my >= ry + step * 3 && my <= ry + step * 3 + rh) {
+            if (mx >= rx + rw - 70 && mx <= rx + rw - 45) {
+                ZyvenMod.setPaymentHudOpacity(ZyvenMod.paymentHudOpacity - 10);
+            } else if (mx >= rx + rw - 29 && mx <= rx + rw - 4) {
+                ZyvenMod.setPaymentHudOpacity(ZyvenMod.paymentHudOpacity + 10);
+            }
             return true;
         }
 
