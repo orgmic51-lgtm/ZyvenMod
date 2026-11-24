@@ -473,6 +473,18 @@ public final class ZyvenMod implements ClientModInitializer {
             if (paid.find()) return paid.group(1);
             Matcher from = PAYER_FROM.matcher(message);
             if (from.find()) return from.group(1);
+
+            // Some economy plugins use custom wording. As a fallback, match an
+            // exact online username present in the payment notification.
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client.getNetworkHandler() != null) {
+                for (var entry : client.getNetworkHandler().getPlayerList()) {
+                    String onlineName = entry.getProfile().name();
+                    Pattern exactName = Pattern.compile("(?i)(?<![A-Za-z0-9_])"
+                            + Pattern.quote(onlineName) + "(?![A-Za-z0-9_])");
+                    if (exactName.matcher(message).find()) return onlineName;
+                }
+            }
             return "Someone";
         }
 
