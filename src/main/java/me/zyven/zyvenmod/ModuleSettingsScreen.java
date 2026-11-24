@@ -19,6 +19,12 @@ public final class ModuleSettingsScreen extends Screen {
         this.moduleName = moduleName;
     }
 
+    private boolean compactLayout() { return width < 600 || height < 450; }
+
+    private int settingsPanelHeight() {
+        return moduleId == 2 ? (compactLayout() ? 224 : 270) : 190;
+    }
+
     private boolean enabled() {
         return switch (moduleId) {
             case 0 -> ZyvenMod.showProfit;
@@ -57,17 +63,18 @@ public final class ModuleSettingsScreen extends Screen {
         ZyvenMod.saveUserSettings();
     }
 
-    private void drawAdjustRow(DrawContext d, int x, int y, int w, String label, String value) {
-        d.fill(x, y, x + w, y + 27, 0xFF1B2838);
+    private void drawAdjustRow(DrawContext d, int x, int y, int w, String label, String value, boolean compact) {
+        int rowHeight = compact ? 22 : 27;
+        d.fill(x, y, x + w, y + rowHeight, 0xFF1B2838);
         d.fill(x + 1, y + 1, x + w - 1, y + 2, 0x2238CFFF);
-        d.drawText(textRenderer, label, x + 9, y + 9, 0xFFE5EFF8, true);
+        d.drawText(textRenderer, label, x + 9, y + (compact ? 7 : 9), 0xFFE5EFF8, true);
         int minusX = x + w - 62;
         int plusX = x + w - 29;
-        d.fill(minusX, y + 4, minusX + 24, y + 23, 0xFF263B50);
-        d.fill(plusX, y + 4, plusX + 24, y + 23, 0xFF15536C);
-        d.drawCenteredTextWithShadow(textRenderer, "−", minusX + 12, y + 9, 0xFFEAF7FF);
-        d.drawCenteredTextWithShadow(textRenderer, "+", plusX + 12, y + 9, 0xFFEAFBFF);
-        d.drawCenteredTextWithShadow(textRenderer, value, x + w - 78, y + 9, 0xFF38CFFF);
+        d.fill(minusX, y + 3, minusX + 24, y + rowHeight - 3, 0xFF263B50);
+        d.fill(plusX, y + 3, plusX + 24, y + rowHeight - 3, 0xFF15536C);
+        d.drawCenteredTextWithShadow(textRenderer, "−", minusX + 12, y + (compact ? 7 : 9), 0xFFEAF7FF);
+        d.drawCenteredTextWithShadow(textRenderer, "+", plusX + 12, y + (compact ? 7 : 9), 0xFFEAFBFF);
+        d.drawCenteredTextWithShadow(textRenderer, value, x + w - 78, y + (compact ? 7 : 9), 0xFF38CFFF);
     }
 
     private void drawOpacityRow(DrawContext d, int x, int y, int panelW, int opacity) {
@@ -86,7 +93,7 @@ public final class ModuleSettingsScreen extends Screen {
     public void render(DrawContext d, int mouseX, int mouseY, float delta) {
         renderBackground(d, mouseX, mouseY, delta);
         int panelW = Math.min(340, width - 24);
-        int panelH = moduleId == 2 ? 270 : 190;
+        int panelH = settingsPanelHeight();
         int x = (width - panelW) / 2;
         int y = (height - panelH) / 2;
         d.fill(x, y, x + panelW, y + panelH, 0xF00D1019);
@@ -130,10 +137,13 @@ public final class ModuleSettingsScreen extends Screen {
             float vy = offhandTab ? ZyvenMod.offhandViewmodelY : ZyvenMod.viewmodelY;
             float vz = offhandTab ? ZyvenMod.offhandViewmodelZ : ZyvenMod.viewmodelZ;
             float vs = offhandTab ? ZyvenMod.offhandViewmodelScale : ZyvenMod.viewmodelScale;
-            drawAdjustRow(d, rowX, y + 114, panelW - 32, "X OFFSET", String.format("%.2f", vx));
-            drawAdjustRow(d, rowX, y + 146, panelW - 32, "Y OFFSET", String.format("%.2f", vy));
-            drawAdjustRow(d, rowX, y + 178, panelW - 32, "Z OFFSET", String.format("%.2f", vz));
-            drawAdjustRow(d, rowX, y + 210, panelW - 32, "SCALE", String.format("%.2f", vs));
+            boolean small = compactLayout();
+            int rowStart = y + (small ? 110 : 114);
+            int rowStep = small ? 24 : 32;
+            drawAdjustRow(d, rowX, rowStart, panelW - 32, "X OFFSET", String.format("%.2f", vx), small);
+            drawAdjustRow(d, rowX, rowStart + rowStep, panelW - 32, "Y OFFSET", String.format("%.2f", vy), small);
+            drawAdjustRow(d, rowX, rowStart + rowStep * 2, panelW - 32, "Z OFFSET", String.format("%.2f", vz), small);
+            drawAdjustRow(d, rowX, rowStart + rowStep * 3, panelW - 32, "SCALE", String.format("%.2f", vs), small);
         } else if (hasSkySettings) {
             d.fill(rowX, y + 88, x + panelW - 16, y + 132, 0xFF202A38);
             d.drawText(textRenderer, "SKY TINT", rowX + 10, y + 96, 0xFFF1F5FA, true);
@@ -199,8 +209,10 @@ public final class ModuleSettingsScreen extends Screen {
                 offhandTab = click.x() >= width / 2.0;
                 return true;
             }
-            int row = (int) ((click.y() - (y + 114)) / 32.0);
-            if (row >= 0 && row < 4 && click.y() <= y + 237) {
+            int rowStart = y + (compactLayout() ? 110 : 114);
+            int rowStep = compactLayout() ? 24 : 32;
+            int row = (int) ((click.y() - rowStart) / (double) rowStep);
+            if (row >= 0 && row < 4 && click.y() <= rowStart + rowStep * 4) {
                 int minusX = rowX + panelW - 32 - 62;
                 int plusX = rowX + panelW - 32 - 29;
                 float direction;
