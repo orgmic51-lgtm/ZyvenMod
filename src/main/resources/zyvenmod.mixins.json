@@ -7,7 +7,10 @@
     "PlayerCapeMixin",
     "ViewmodelMixin",
     "HandledScreenMixin",
-    "SkyRenderingMixin"
+    "SkyRenderingMixin",
+    "PlayerListHudMixin",
+    "ChatHudMixin",
+    "EntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
