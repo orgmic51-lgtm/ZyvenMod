@@ -26,6 +26,7 @@ public final class ModuleSettingsScreen extends Screen {
             case 5 -> ZyvenMod.crosshairStyleEnabled;
             case 6 -> ZyvenMod.cleanHudEnabled;
             case 7 -> ZyvenMod.showFps;
+            case 9 -> ZyvenMod.zyvenCapeEnabled;
             default -> false;
         };
     }
@@ -40,6 +41,7 @@ public final class ModuleSettingsScreen extends Screen {
             case 5 -> ZyvenMod.crosshairStyleEnabled = value;
             case 6 -> ZyvenMod.cleanHudEnabled = value;
             case 7 -> ZyvenMod.showFps = value;
+            case 9 -> ZyvenMod.zyvenCapeEnabled = value;
         }
     }
 
@@ -64,6 +66,7 @@ public final class ModuleSettingsScreen extends Screen {
         d.drawText(textRenderer, state, x + panelW - 48, rowY + 11, color, false);
 
         boolean hasHudSettings = moduleId == 0 || moduleId == 7;
+        boolean hasCapeSettings = moduleId == 9;
         if (hasHudSettings) {
             rowY += 38;
             d.fill(rowX, rowY, x + panelW - 16, rowY + 30, 0xFF202A38);
@@ -71,6 +74,13 @@ public final class ModuleSettingsScreen extends Screen {
             d.drawText(textRenderer, ZyvenMod.hudBackground ? "ON" : "OFF",
                     x + panelW - 48, rowY + 11,
                     ZyvenMod.hudBackground ? 0xFF42D98B : 0xFFFF6572, false);
+        } else if (hasCapeSettings) {
+            d.drawCenteredTextWithShadow(textRenderer,
+                    Text.literal("Texture: zyvenclient"),
+                    width / 2, y + 104, 0xFF38CFFF);
+            d.drawCenteredTextWithShadow(textRenderer,
+                    Text.literal("Local cosmetic cape preview"),
+                    width / 2, y + 119, 0xFF9BA8BA);
         } else {
             d.drawCenteredTextWithShadow(textRenderer,
                     Text.literal("No extra settings are available for this module yet."),
