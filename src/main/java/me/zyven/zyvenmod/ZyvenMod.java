@@ -349,15 +349,15 @@ public final class ZyvenMod implements ClientModInitializer {
         ALERT_PARTICLES.clear();
         if (payAlertParticles) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
-            for (int i = 0; i < 96; i++) {
+            for (int i = 0; i < 180; i++) {
                 double angle = random.nextDouble(0, Math.PI * 2);
-                double speed = random.nextDouble(0.35, 1.65);
+                double speed = random.nextDouble(0.45, 2.15);
                 ALERT_PARTICLES.add(new AlertParticle(
                         random.nextDouble(-185, 186),
                         random.nextDouble(-75, 76),
-                        Math.cos(angle) * speed * 1.35,
-                        Math.sin(angle) * speed * 1.35 - 0.45,
-                        random.nextInt(24, 52)
+                        Math.cos(angle) * speed * 1.55,
+                        Math.sin(angle) * speed * 1.55 - 0.65,
+                        random.nextInt(30, 66)
                 ));
             }
         }
