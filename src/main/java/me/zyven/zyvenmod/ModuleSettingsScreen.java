@@ -158,9 +158,9 @@ public final class ModuleSettingsScreen extends Screen {
                     width / 2, y + 115, 0xFFB6C3D1);
         } else if (moduleId == 11) {
             d.drawCenteredTextWithShadow(textRenderer,
-                    Text.literal("Z  WHITE   •   Y  CYAN"), width / 2, y + 104, 0xFF38CFFF);
+                    Text.literal("◆  CYAN PLAYER ICON"), width / 2, y + 104, 0xFF38CFFF);
             d.drawCenteredTextWithShadow(textRenderer,
-                    Text.literal("Shown before player names in TAB, chat and nametags"),
+                    Text.literal("Shown beside names in TAB, chat and nametags"),
                     width / 2, y + 119, 0xFF9BA8BA);
         } else if (hasCapeSettings) {
             d.drawCenteredTextWithShadow(textRenderer,
@@ -184,7 +184,7 @@ public final class ModuleSettingsScreen extends Screen {
     @Override
     public boolean mouseClicked(Click click, boolean doubled) {
         int panelW = Math.min(340, width - 24);
-        int panelH = moduleId == 2 ? 250 : 190;
+        int panelH = moduleId == 2 ? 270 : 190;
         int x = (width - panelW) / 2;
         int y = (height - panelH) / 2;
         int rowX = x + 16;
@@ -256,9 +256,9 @@ public final class ModuleSettingsScreen extends Screen {
         if ((moduleId == 0 || moduleId == 7)
                 && click.y() >= rowY + 76 && click.y() <= rowY + 106) {
             int current = moduleId == 0 ? ZyvenMod.profitHudOpacity : ZyvenMod.fpsHudOpacity;
-            if (click.x() >= x + panelW - 100 && click.x() <= x + panelW - 76) {
+            if (click.x() >= rowX + panelW - 100 && click.x() <= rowX + panelW - 76) {
                 current -= 10;
-            } else if (click.x() >= x + panelW - 44 && click.x() <= x + panelW - 20) {
+            } else if (click.x() >= rowX + panelW - 44 && click.x() <= rowX + panelW - 20) {
                 current += 10;
             } else return true;
             if (moduleId == 0) ZyvenMod.setProfitHudOpacity(current);
