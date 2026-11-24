@@ -222,7 +222,9 @@ public final class PayAlertSettingsScreen extends Screen {
         int previewH = compact() ? 19 : 22;
         if (mx >= x + 14 && mx <= x + w - 14
                 && my >= previewY && my <= previewY + previewH) {
-            ZyvenMod.showPaymentAlert("Alex", "+1B");
+            String previewName = client != null && client.player != null
+                    ? client.player.getName().getString() : "Preview";
+            ZyvenMod.showPaymentAlert(previewName, "+1B");
             if (client != null) client.setScreen(null);
             return true;
         }
