@@ -16,7 +16,7 @@ public final class PayAlertSettingsScreen extends Screen {
         renderBackground(d, mouseX, mouseY, delta);
         boolean compact = height < 310;
         int w = Math.min(width - 20, 440);
-        int h = compact ? Math.min(height - 12, 224) : Math.min(height - 24, 370);
+        int h = compact ? Math.min(height - 12, 270) : Math.min(height - 24, 390);
         int x = (width - w) / 2, y = (height - h) / 2;
 
         rounded(d, x, y + 3, w, h, 14, 0x60000000);
@@ -32,9 +32,9 @@ public final class PayAlertSettingsScreen extends Screen {
         if (!compact) d.drawText(textRenderer, "Y  •  CLOSE", x + w - 89, y + 17, 0xFF8797A9, false);
 
         int rowX = x + 13, rowW = w - 26;
-        int rowHeight = compact ? 28 : 35;
+        int rowHeight = compact ? 26 : 34;
         int rowStart = y + (compact ? 49 : 82);
-        int rowStep = compact ? 33 : 43;
+        int rowStep = compact ? 30 : 40;
         row(d, rowX, rowStart, rowW, rowHeight, "PAYMENT ALERTS",
                 ZyvenMod.payAlertsEnabled ? "ON" : "OFF",
                 ZyvenMod.payAlertsEnabled ? 0xFF5BE4A0 : 0xFFFF7481);
@@ -44,7 +44,7 @@ public final class PayAlertSettingsScreen extends Screen {
         row(d, rowX, rowStart + rowStep * 2, rowW, rowHeight, "DURATION",
                 ZyvenMod.payAlertDurationSeconds + " SEC", 0xFFB9D9EA);
 
-        int colorLabelY = y + (compact ? 151 : 250);
+        int colorLabelY = y + (compact ? 174 : 264);
         d.drawText(textRenderer, "ACCENT COLOR", rowX + 2, colorLabelY, 0xFFE5EDF5, true);
         if (!compact) d.drawText(textRenderer, "Name + particle color", rowX + 2, colorLabelY + 15, 0xFF8495A9, false);
 
@@ -52,7 +52,7 @@ public final class PayAlertSettingsScreen extends Screen {
         int gap = Math.max(3, (rowW - 7 * swatchSize) / 6);
         int totalWidth = 7 * swatchSize + 6 * gap;
         int swatchX = x + (w - totalWidth) / 2;
-        int swatchY = y + (compact ? 169 : 282);
+        int swatchY = y + (compact ? 192 : 296);
         for (int i = 0; i < COLORS.length; i++) {
             int sx = swatchX + i * (swatchSize + gap);
             boolean selected = ZyvenMod.payAlertColor == COLORS[i];
@@ -101,12 +101,12 @@ public final class PayAlertSettingsScreen extends Screen {
     public boolean mouseClicked(Click click, boolean doubled) {
         boolean compact = height < 310;
         int w = Math.min(width - 20, 440);
-        int h = compact ? Math.min(height - 12, 224) : Math.min(height - 24, 370);
+        int h = compact ? Math.min(height - 12, 270) : Math.min(height - 24, 390);
         int x = (width - w) / 2, y = (height - h) / 2;
         int rowX = x + 13, rowW = w - 26;
         int rowStart = y + (compact ? 49 : 82);
-        int rowStep = compact ? 33 : 43;
-        int rowHeight = compact ? 28 : 35;
+        int rowStep = compact ? 30 : 40;
+        int rowHeight = compact ? 26 : 34;
         double mx = click.x(), my = click.y();
 
         if (mx >= rowX && mx <= rowX + rowW && my >= rowStart && my <= rowStart + rowHeight) {
