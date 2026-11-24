@@ -38,6 +38,8 @@ public final class ZyvenMod implements ClientModInitializer {
     public static boolean payAlertParticles = true;
     public static int payAlertColor = 0xFF38CFFF;
     public static int payAlertDurationSeconds = 4;
+    // Only incoming payments at or above this amount trigger the popup.
+    public static double payAlertMinimum = 0;
 
     private static KeyBinding modulesKey;
     private static KeyBinding auctionKey;
@@ -148,6 +150,20 @@ public final class ZyvenMod implements ClientModInitializer {
         return ALERT_PARTICLES;
     }
 
+    public static String formatCompactAmount(double value) {
+        double abs = Math.abs(value);
+        String sign = value > 0 ? "+" : value < 0 ? "-" : "";
+        if (abs >= 1_000_000_000) return sign + compactNumber(abs / 1_000_000_000) + "B";
+        if (abs >= 1_000_000) return sign + compactNumber(abs / 1_000_000) + "M";
+        if (abs >= 1_000) return sign + compactNumber(abs / 1_000) + "K";
+        return sign + String.format(Locale.US, "%.0f", abs);
+    }
+
+    private static String compactNumber(double n) {
+        return String.format(Locale.US, n >= 100 ? "%.0f" : n >= 10 ? "%.1f" : "%.2f", n)
+                .replaceAll("\\\\.0+$", "").replaceAll("(\\\\.\\\\d*[1-9])0+$", "$1");
+    }
+
     public static int[] alertColorPresets() {
         return new int[] {
                 0xFF38CFFF, 0xFF598BFF, 0xFF9B78FF, 0xFFFF72B6,
@@ -204,8 +220,9 @@ public final class ZyvenMod implements ClientModInitializer {
             if (amount <= 0) return;
             total += amount;
 
+            if (amount < payAlertMinimum) return;
             String payer = findPayer(message);
-            showPaymentAlert(payer, formatAmount(amount));
+            showPaymentAlert(payer, formatCompactAmount(amount));
         }
 
         private String findPayer(String message) {
